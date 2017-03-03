@@ -42,5 +42,17 @@ curl "https://eksisozluk.com/basliklar/basiboslar?_=1488571362708" -H "Accept: *
 #### Videolar:
 
 ```
-curl "https://eksisozluk.com/basliklar/videolar?_=1488571362709" -H "Accept: */*" -H "Referer: https://eksisozluk.com/" -H "X-Requested-With: XMLHttpRequest" 
+curl "https://eksisozluk.com/basliklar/videolar?_=1488571362709" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/" 
+```
+
+#### Tarihte Bugün:
+
+```
+curl "https://eksisozluk.com/basliklar/tarihte-bugun?_=1488571362710" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"
+```
+
+#### Tarihte Bugün: ( XXXX yılında)
+
+```
+curl "https://eksisozluk.com/basliklar/tarihte-bugun?year=2010&_=1488571362711" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"
 ```
