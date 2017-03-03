@@ -56,3 +56,7 @@ curl "https://eksisozluk.com/basliklar/tarihte-bugun?_=1488571362710" -H "Accept
 ```
 curl "https://eksisozluk.com/basliklar/tarihte-bugun?year=2010&_=1488571362711" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"
 ```
+
+> **Note:**
+
+> Paging özelliği olan adreslere "p" parametresi ile sayfa numarası geçirilerek yeni veriler istenebilir ( örnek &p=2, &p=3)
