@@ -24,39 +24,47 @@ Başlayalım o zaman!
 #### Populer Başlıklar:
 
 ```
-curl "https://eksisozluk.com/basliklar/m/populer" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Referer: https://eksisozluk.com/"
+curl "https://eksisozluk.com/basliklar/m/populer" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Referer: https://eksisozluk.com/" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6"
 ```
 
 #### Bugün:
 
 ```
-curl "https://eksisozluk.com/index/feedrefresh?_=1488568053748" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"
+curl "https://eksisozluk.com/index/feedrefresh?_=1488568053748" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6"
 ```
 
 #### Başıboşlar:
 
 ```
-curl "https://eksisozluk.com/basliklar/basiboslar?_=1488571362708" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest"  -H "Referer: https://eksisozluk.com/"
+curl "https://eksisozluk.com/basliklar/basiboslar?_=1488571362708" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest"  -H "Referer: https://eksisozluk.com/" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6"
 ```
 
 #### Videolar:
 
 ```
-curl "https://eksisozluk.com/basliklar/videolar?_=1488571362709" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/" 
+curl "https://eksisozluk.com/basliklar/videolar?_=1488571362709" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"  -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6"
 ```
 
 #### Tarihte Bugün:
 
 ```
-curl "https://eksisozluk.com/basliklar/tarihte-bugun?_=1488571362710" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"
+curl "https://eksisozluk.com/basliklar/tarihte-bugun?_=1488571362710" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6"
 ```
 
 #### Tarihte Bugün: ( XXXX yılında)
 
 ```
-curl "https://eksisozluk.com/basliklar/tarihte-bugun?year=2010&_=1488571362711" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/"
+curl "https://eksisozluk.com/basliklar/tarihte-bugun?year=2010&_=1488571362711" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "Referer: https://eksisozluk.com/" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6"
 ```
+
 
 > **Note:**
 
 > Paging özelliği olan adreslere "p" parametresi ile sayfa numarası geçirilerek yeni veriler istenebilir ( örnek &p=2, &p=3)
+
+
+#### Başlık ararken yapılan öneriler:
+
+```
+curl "https://eksisozluk.com/autocomplete/query?q=fenerb^&_=1488571362714" -H "Accept: application/json, text/javascript, */*; q=0.01" -H "Referer: https://eksisozluk.com/" -H "X-Requested-With: XMLHttpRequest"
+```
