@@ -1,3 +1,10 @@
+@-moz-document domain("github.com") {
+  .highlight > pre, pre > code {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+  }
+}
+
 Ekşi Sözlük Gayrıresmi API
 ===================
 
