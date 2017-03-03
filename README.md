@@ -1,10 +1,3 @@
-@-moz-document domain("github.com") {
-  .highlight > pre, pre > code {
-    max-height: 200px !important;
-    overflow-y: auto !important;
-  }
-}
-
 Ekşi Sözlük Gayrıresmi API
 ===================
 
@@ -44,4 +37,10 @@ curl "https://eksisozluk.com/index/feedrefresh?_=1488568053748" -H "Accept: */*"
 
 ```
 curl "https://eksisozluk.com/basliklar/basiboslar?_=1488571362708" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest"  -H "Referer: https://eksisozluk.com/"
+```
+
+#### Videolar:
+
+```
+curl "https://eksisozluk.com/basliklar/videolar?_=1488571362709" -H "Accept: */*" -H "Referer: https://eksisozluk.com/" -H "X-Requested-With: XMLHttpRequest" 
 ```
