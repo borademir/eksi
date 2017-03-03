@@ -68,3 +68,31 @@ curl "https://eksisozluk.com/basliklar/tarihte-bugun?year=2010&_=1488571362711" 
 ```
 curl "https://eksisozluk.com/autocomplete/query?q=fenerb^&_=1488571362714" -H "Accept: application/json, text/javascript, */*; q=0.01" -H "Referer: https://eksisozluk.com/" -H "X-Requested-With: XMLHttpRequest"
 ```
+
+#### Kanala ait başlıklar ( örnek : spor ) :
+
+```
+curl "https://eksisozluk.com/basliklar/kanal/spor?_=1488571362717" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6" -H "Accept: */*" -H "Referer: https://eksisozluk.com/" -H "X-Requested-With: XMLHttpRequest" -H "Connection: keep-alive" --compressed
+```
+
+#### Başlıktaki günün entryleri :
+
+```
+curl "https://eksisozluk.com/jeremain-lens--1935794?day=2017-03-03" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6" -H "Upgrade-Insecure-Requests: 1" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Connection: keep-alive" --compressed
+```
+
+#### Başlıktaki günün şükelaları :
+
+```
+curl "https://eksisozluk.com/jeremain-lens--1935794?a=dailynice" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6" -H "Upgrade-Insecure-Requests: 1" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Connection: keep-alive" --compressed
+```
+
+#### Başlıktaki tüm şükelalar :
+
+```
+curl "https://eksisozluk.com/jeremain-lens--1935794?a=nice" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6" -H "Upgrade-Insecure-Requests: 1" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Connection: keep-alive" --compressed
+```
+
+
+Count / Date / Topic
+curl "https://eksisozluk.com/basliklar/ara?SearchForm.Keywords=fener^&SearchForm.Author=yol^%^20yordam^%^20ogren^%^20oyle^%^20gel^&SearchForm.When.From=2017-01-02^&SearchForm.When.To=2017-03-02^&SearchForm.NiceOnly=true^&SearchForm.NiceOnly=false^&SearchForm.SortOrder=Topic^&_=1488574253486" -H "Accept-Encoding: gzip, deflate, sdch, br" -H "Accept-Language: en-US,en;q=0.8,tr;q=0.6" -H "Accept: */*" -H "Referer: https://eksisozluk.com/?q=" -H "X-Requested-With: XMLHttpRequest" -H "Connection: keep-alive" --compressed
