@@ -27,6 +27,13 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<organization>
@@ -83,9 +90,10 @@
 									</includes>
 								</resource>
 							</resources>
+							<encoding>UTF-8</encoding>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>copy-resources-2</id>
 						<phase>process-resources</phase>
@@ -93,7 +101,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}\test-classes</outputDirectory>	
+							<outputDirectory>${project.build.directory}\test-classes</outputDirectory>
 							<resources>
 								<resource>
 									<directory>src/main/resources</directory>
@@ -147,7 +155,9 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
 							<groups>org.borademir.eksici.test.EksiciApiAnonymousTests</groups>
+							<argLine>-Dfile.encoding=UTF-8</argLine>
 						</configuration>
+
 					</plugin>
 				</plugins>
 			</build>

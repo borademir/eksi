@@ -48,5 +48,8 @@ public class EksiciResourceUtil {
 	public static String getPopularTopicsUrl(){
 		return PROPERTIES.getProperty("url.populertopics");
 	}
-
+	
+	public static String getHeaderReferrer(){
+		return PROPERTIES.getProperty("header.referer");
+	}
 }

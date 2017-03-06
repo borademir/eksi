@@ -4,7 +4,7 @@ import org.borademir.eksici.api.impl.MainPageServiceJsoupImpl;
 
 public class EksiciApiServiceFactory {
 	
-	public IMainPageService createMainPageService(){
+	public static IMainPageService createMainPageService(){
 		return new MainPageServiceJsoupImpl();
 	}
 
