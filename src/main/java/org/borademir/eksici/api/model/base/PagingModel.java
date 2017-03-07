@@ -1,8 +1,10 @@
-package org.borademir.eksici.api.model;
-
-public class EksiPagingModel extends EksiBaseModel {
+package org.borademir.eksici.api.model.base;
+/**
+ * @author bora.demir
+ */
+public class PagingModel extends EksiBaseModel {
 	
-	private int currentPage ;
+	private int currentPage = 1;
 	
 	protected boolean hasNext = true;
 	

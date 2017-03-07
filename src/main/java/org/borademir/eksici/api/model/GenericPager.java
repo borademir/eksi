@@ -1,0 +1,24 @@
+package org.borademir.eksici.api.model;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.borademir.eksici.api.model.base.PagingModel;
+/**
+ * @author bora.demir
+ */
+public class GenericPager<T> extends PagingModel{
+	
+	static Logger log = Logger.getLogger(GenericPager.class);
+
+	private List<T> contentList ;
+	
+	public List<T> getContentList() {
+		return contentList;
+	}
+	
+	public void setContentList(List<T> contentList) {
+		this.contentList = contentList;
+	}
+	
+}

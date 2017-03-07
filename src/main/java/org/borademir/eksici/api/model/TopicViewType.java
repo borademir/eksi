@@ -2,8 +2,8 @@ package org.borademir.eksici.api.model;
 /**
  * @author bora.demir
  */
-public enum TopicTypes {
+public enum TopicViewType {
 	
-	POPULAR, TODAYS
+	POPULAR, NICE
 
 }

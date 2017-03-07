@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-
+/**
+ * @author bora.demir
+ */
 public class EksiciResourceUtil {
 	
 	static final Properties PROPERTIES = load()  ;
@@ -48,6 +50,15 @@ public class EksiciResourceUtil {
 	public static String getPopularTopicsUrl(){
 		return PROPERTIES.getProperty("url.populertopics");
 	}
+	
+	public static String getTodaysTopicsUrl(long pTimeInMs){
+		return PROPERTIES.getProperty("url.todaystopics") + pTimeInMs;
+	}
+
+	public static String getUserAgent(){
+		return PROPERTIES.getProperty("url.useragent") ;
+	}
+	
 	
 	public static String getHeaderReferrer(){
 		return PROPERTIES.getProperty("header.referer");
