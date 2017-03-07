@@ -92,12 +92,12 @@ public class ServiceTester {
 			while((desertedTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(mainPage,1999)) != null){
 				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
 					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
-//				GenericPager<EntryModel> currentPage = null;
-//				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
-//					printEntryModel(currentPage);
-//				}
-//				break;
-				}
+//					GenericPager<EntryModel> currentPage = null;
+//					while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
+//						printEntryModel(currentPage);
+//					}
+//					break;
+					}
 			}
 		}
 		

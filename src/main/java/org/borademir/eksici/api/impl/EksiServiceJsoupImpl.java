@@ -352,7 +352,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			if(lastPageOfPopularTopics.getNextPageHref() == null){
 				hasNext = false;
 			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref().replaceAll(pChannel.getName().replaceAll("#", ""), URLEncoder.encode(pChannel.getName().replaceAll("#", ""), "UTF-8"));
 			}
 		}
 		if(!hasNext){
@@ -369,13 +369,9 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.method(Method.GET);
 		
-		Response response = null;
-		try {
-			response = conn.execute();
-		} catch (Exception e) {
-			return null;
-		}
-		log.debug("Loaded : " + response.url());
+		log.debug("Loading : " + targetUrl);
+		Response response = conn.execute();
+		log.debug("Loaded  : " + response.url());
 		
 		Document doc = response.parse();
 		
