@@ -3,6 +3,7 @@ package org.borademir.eksici.api.impl;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.IEksiService;
+import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
@@ -341,7 +343,91 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	
 	}
 	
+	@Override
+	public GenericPager<TopicModel> retrieveChannelTopics(ChannelModel pChannel)throws IOException {
+		boolean hasNext = true;
+		String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pChannel.getHref();
+		if(pChannel.getTopics() != null && pChannel.getTopics().size() > 0){
+			GenericPager<TopicModel> lastPageOfPopularTopics = pChannel.getTopics().get(pChannel.getTopics().size()-1);
+			if(lastPageOfPopularTopics.getNextPageHref() == null){
+				hasNext = false;
+			}else{
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
+			}
+		}
+		if(!hasNext){
+			return null;
+		}
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
+		
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		Response response = null;
+		try {
+			response = conn.execute();
+		} catch (Exception e) {
+			return null;
+		}
+		log.debug("Loaded : " + response.url());
+		
+		Document doc = response.parse();
+		
+		/**
+		 * parse next page link if exists
+		 */
+		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.CHANNEL);
+		
+		currentPopularPage.setContentList(topicList);
+		if(pChannel.getTopics() == null){
+			pChannel.setTopics(new ArrayList<GenericPager<TopicModel>>());
+		}
+		pChannel.getTopics().add(currentPopularPage);
+		return currentPopularPage;
 	
+	}
+
+	
+	@Override
+	public List<ChannelModel> retrieveChannels(MainPageModel mainPage)throws IOException {
+		
+		Connection conn = Jsoup.connect(EksiciResourceUtil.getHeaderReferrer()).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		
+		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		
+//		System.out.println(doc.html());
+		List<ChannelModel> retList = new ArrayList<ChannelModel>();
+		Elements anchors = doc.select("a.index-link");
+		for(Element anchor : anchors){
+			if(anchor.text().startsWith("#")){
+				ChannelModel channel = new ChannelModel();
+				channel.setHref(anchor.attr("href"));
+				channel.setTitle(anchor.attr("title"));
+				channel.setName(anchor.text());
+				retList.add(channel );
+			}
+		}
+		return retList;
+	
+	}
 	static class JsoupHtmlParser {
 		
 		private static void parseNextPageForTopicPage(GenericPager<TopicModel> currentPopularPage, Document doc,Element nextPageElement) throws UnsupportedEncodingException {
@@ -394,5 +480,4 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			return topicList;
 		}
 	}
-
 }

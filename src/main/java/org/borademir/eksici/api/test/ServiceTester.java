@@ -2,10 +2,12 @@ package org.borademir.eksici.api.test;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiServiceFactory;
 import org.borademir.eksici.api.IEksiService;
+import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
@@ -36,7 +38,7 @@ public class ServiceTester {
 		boolean processPopulars = false;
 		boolean processTodays = false;
 		boolean processDeserted = false;
-		boolean processTodayInHistory = true;
+		boolean processTodayInHistory = false;
 		
 		
 		if(processPopulars){
@@ -96,6 +98,18 @@ public class ServiceTester {
 //				}
 //				break;
 				}
+			}
+		}
+		
+		log.debug("Channels:");
+		List<ChannelModel> channels = eksiciService.retrieveChannels(mainPage);
+		for(ChannelModel channel : channels){
+			log.debug(channel.getName() + " (" + channel.getTitle() + ") -- " + channel.getHref() );
+			GenericPager<TopicModel> channelTopics = null;
+			while((channelTopics = eksiciService.retrieveChannelTopics(channel)) != null){
+//				for(TopicModel tm : channelTopics.getContentList()){
+//					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
+//				}
 			}
 		}
 		
