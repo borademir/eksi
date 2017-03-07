@@ -1,4 +1,4 @@
-package org.borademir.eksici.test;
+package org.borademir.eksici;
 /**
  * @author bora.demir
  */

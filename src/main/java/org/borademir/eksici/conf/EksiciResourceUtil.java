@@ -54,6 +54,10 @@ public class EksiciResourceUtil {
 	public static String getTodaysTopicsUrl(long pTimeInMs){
 		return PROPERTIES.getProperty("url.todaystopics") + pTimeInMs;
 	}
+	
+	public static String getDesertedTopicsUrl(long pTimeInMs){
+		return PROPERTIES.getProperty("url.desertedtopics") + pTimeInMs;
+	}
 
 	public static String getUserAgent(){
 		return PROPERTIES.getProperty("url.useragent") ;

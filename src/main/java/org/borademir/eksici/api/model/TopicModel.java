@@ -10,6 +10,7 @@ import org.borademir.eksici.api.model.base.EksiBaseModel;
 public class TopicModel extends EksiBaseModel {
 	
 	private String href;
+	private String originalUrl ;
 	private String topicText;
 	private String topicPopularEntryCount;
 	private TopicTypes type ;
@@ -72,6 +73,12 @@ public class TopicModel extends EksiBaseModel {
 
 	public void setCurrentPage(int currentPage) {
 		this.currentPage = currentPage;
+	}
+	public String getOriginalUrl() {
+		return originalUrl;
+	}
+	public void setOriginalUrl(String originalUrl) {
+		this.originalUrl = originalUrl;
 	}
 
 }

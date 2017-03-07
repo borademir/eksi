@@ -12,6 +12,7 @@ import org.borademir.eksici.api.IEksiService;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
+import org.borademir.eksici.api.model.SukelaMode;
 import org.borademir.eksici.api.model.SuserModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.api.model.TopicTypes;
@@ -60,8 +61,8 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.method(Method.GET);
 		
 		
-		log.debug("Loading : " + targetUrl);
 		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
 		/**
@@ -96,6 +97,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			
 			TopicModel tm = new TopicModel();
 			tm.setHref(href);
+			if(href.contains("?")){
+				tm.setOriginalUrl(href.split("\\?")[0]);
+			}else{
+				tm.setOriginalUrl(href);
+			}
 			tm.setTopicPopularEntryCount(topicPopularEntryCount);
 			tm.setTopicText(topicText);
 			tm.setType(TopicTypes.POPULAR);
@@ -140,9 +146,13 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.method(Method.GET);
 		
-		log.debug("Loading : " + targetUrl);
+		
+		
+		
 		
 		Response response = conn.execute();
+		
+		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
 //		System.out.println(doc.html());
@@ -183,6 +193,100 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			}
 			
 			tm.setHref(href);
+			if(href.contains("?")){
+				tm.setOriginalUrl(href.split("\\?")[0]);
+			}else{
+				tm.setOriginalUrl(href);
+			}
+			tm.setTopicText(topicText);
+			tm.setType(TopicTypes.TODAYS);
+			
+			topicList.add(tm);
+		}
+		
+		currentPopularPage.setContentList(topicList);
+		if(mainPage.getTodaysTopics() == null){
+			mainPage.setTodaysTopics(new ArrayList<GenericPager<TopicModel>>());
+		}
+		mainPage.getTodaysTopics().add(currentPopularPage);
+		return currentPopularPage;
+	}
+	
+	@Override
+	public GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel mainPage) throws IOException {
+
+		boolean hasNext = true;
+		String targetUrl = EksiciResourceUtil.getDesertedTopicsUrl(System.currentTimeMillis());
+		if(mainPage.getTodaysTopics() != null && mainPage.getTodaysTopics().size() > 0){
+			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getTodaysTopics().get(mainPage.getTodaysTopics().size()-1);
+			if(lastPageOfPopularTopics.getNextPageHref() == null){
+				hasNext = false;
+			}else{
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
+			}
+		}
+		if(!hasNext){
+			return null;
+		}
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
+		
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
+		
+		Document doc = response.parse();
+		
+//		System.out.println(doc.html());
+		
+		/**
+		 * parse next page link if exists
+		 */
+		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
+		if(nextPageElement == null){
+			Element pagerDivelement = doc.select("div.pager").first();
+			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
+			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
+			if(currentPage < maxPage){
+				String nextPageNumber = String.valueOf(currentPage+1);
+				String href = MessageFormat.format(URLDecoder.decode(pagerDivelement.attr("data-urltemplate"),"UTF-8"),nextPageNumber);
+				currentPopularPage.setNextPageHref(href);
+			}
+		}else{
+			currentPopularPage.setNextPageHref(nextPageElement.attr("href"));
+		}
+		
+		Element topicListElement = doc.getElementsByAttributeValue("class", "topic-list partial").get(0);
+		Elements liElements = topicListElement.getElementsByTag("li");
+		List<TopicModel> topicList = new ArrayList<TopicModel>();
+		for(Element liEl : liElements){
+			if(liEl.id().contains("sponsored-index")){
+				continue;
+			}
+			Element topicElement = liEl.getElementsByTag("a").get(0);
+			String href = topicElement.attr("href");
+			String topicText = ((TextNode)topicElement.childNode(0)).text();
+			String topicPopularEntryCount = "0";
+			TopicModel tm = new TopicModel();
+			try {
+				topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
+				tm.setTopicPopularEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
+			} catch (Exception e) {
+			}
+			
+			tm.setHref(href);
+			if(href.contains("?")){
+				tm.setOriginalUrl(href.split("\\?")[0]);
+			}else{
+				tm.setOriginalUrl(href);
+			}
 			tm.setTopicText(topicText);
 			tm.setType(TopicTypes.TODAYS);
 			
@@ -199,24 +303,33 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	
 	
 	@Override
-	public GenericPager<EntryModel> retriveEntries(TopicModel pTopicModel) throws IOException {
+	public GenericPager<EntryModel> retriveEntries(TopicModel pTopic,SukelaMode pSukelaMod) throws IOException {
 		
 		int targetPage = 1;
 		
-		if(pTopicModel.getEntryList() != null){
-			if(pTopicModel.getCurrentPage() == pTopicModel.getTotalPage()){
+		if(pTopic.getEntryList() != null){
+			if(pTopic.getCurrentPage() == pTopic.getTotalPage()){
 				return null;
 			}
-			targetPage = pTopicModel.getCurrentPage()+1;
+			targetPage = pTopic.getCurrentPage()+1;
 		}
 
-		Connection conn = Jsoup.connect(EksiciResourceUtil.getHeaderReferrer() + pTopicModel.getHref()).ignoreContentType(true)
+		String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pTopic.getHref();
+		if(pSukelaMod != null && targetUrl.contains("?")){
+			targetUrl = targetUrl.split("\\?")[0];
+		}
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.data("p",String.valueOf(targetPage))
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
 		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.method(Method.GET);
+		
+		if(pSukelaMod != null){
+			conn.data("a", pSukelaMod.name().toLowerCase());
+		}
 		
 		Response response = conn.execute();
 		
@@ -224,17 +337,17 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		Element pagerDivelement = doc.select("div.pager").first();
 		if(pagerDivelement == null){
-			pTopicModel.setCurrentPage(1);
-			pTopicModel.setTotalPage(1);
+			pTopic.setCurrentPage(1);
+			pTopic.setTotalPage(1);
 		}else{
 			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
 			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			pTopicModel.setCurrentPage(currentPage);
-			pTopicModel.setTotalPage(maxPage);
+			pTopic.setCurrentPage(currentPage);
+			pTopic.setTotalPage(maxPage);
 			
 			Element nextAnchor = pagerDivelement.select("a.next").first();
 			if(nextAnchor != null){
-				pTopicModel.setNextPageHref(nextAnchor.attr("href"));
+				pTopic.setNextPageHref(nextAnchor.attr("href"));
 			}
 		}
 		
@@ -242,11 +355,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Element entryListUlElement = doc.getElementById("entry-list");
 		Elements liElements = entryListUlElement.getElementsByTag("li");
 		
-		if(pTopicModel.getEntryList() == null){
-			pTopicModel.setEntryList(new ArrayList<GenericPager<EntryModel>>());
+		if(pTopic.getEntryList() == null){
+			pTopic.setEntryList(new ArrayList<GenericPager<EntryModel>>());
 		}
 		GenericPager<EntryModel> currentPageModel = new GenericPager<EntryModel>();
-		currentPageModel.setCurrentPage(pTopicModel.getCurrentPage());
+		currentPageModel.setCurrentPage(pTopic.getCurrentPage());
 		currentPageModel.setContentList(new ArrayList<EntryModel>());
 		
 		for(Element liEl : liElements){
@@ -298,7 +411,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			
 		}
 		
-		pTopicModel.getEntryList().add(currentPageModel);
+		pTopic.getEntryList().add(currentPageModel);
 		return currentPageModel;
 	
 	}
