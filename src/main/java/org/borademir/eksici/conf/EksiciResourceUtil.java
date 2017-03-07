@@ -58,11 +58,14 @@ public class EksiciResourceUtil {
 	public static String getDesertedTopicsUrl(long pTimeInMs){
 		return PROPERTIES.getProperty("url.desertedtopics") + pTimeInMs;
 	}
-
+	
+	public static String getTodayInHistoryTopicsUrl(long pTimeInMs){
+		return PROPERTIES.getProperty("url.todayinhistory") + pTimeInMs;
+	}
+	
 	public static String getUserAgent(){
 		return PROPERTIES.getProperty("url.useragent") ;
 	}
-	
 	
 	public static String getHeaderReferrer(){
 		return PROPERTIES.getProperty("header.referer");

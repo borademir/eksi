@@ -35,7 +35,8 @@ public class ServiceTester {
 		
 		boolean processPopulars = false;
 		boolean processTodays = false;
-		boolean processDeserted = true;
+		boolean processDeserted = false;
+		boolean processTodayInHistory = true;
 		
 		
 		if(processPopulars){
@@ -74,6 +75,21 @@ public class ServiceTester {
 			while((desertedTopicCurrentPage = eksiciService.retrieveDesertedTopics(mainPage)) != null){
 				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
 					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getOriginalUrl());
+//				GenericPager<EntryModel> currentPage = null;
+//				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
+//					printEntryModel(currentPage);
+//				}
+//				break;
+				}
+			}
+		}
+		
+		if(processTodayInHistory){
+			log.debug("Today In History Topics:");
+			GenericPager<TopicModel> desertedTopicCurrentPage = null;
+			while((desertedTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(mainPage,1999)) != null){
+				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
 //				GenericPager<EntryModel> currentPage = null;
 //				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //					printEntryModel(currentPage);

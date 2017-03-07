@@ -20,6 +20,8 @@ public interface IEksiService extends IEksiBaseService{
 	
 	GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel mainPage) throws IOException;
 	
+	GenericPager<TopicModel> retrieveTodayInHistoryTopics(MainPageModel mainPage, int pYear) throws IOException;
+	
 	GenericPager<EntryModel> retriveEntries(TopicModel pTopic,SukelaMode pSukelaMod)  throws IOException;
 
 }
