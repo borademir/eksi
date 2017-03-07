@@ -11,6 +11,8 @@ public class MainPageModel extends EksiBaseModel{
 	private List<GenericPager<TopicModel>> popularTopics ;
 	
 	private List<GenericPager<TopicModel>> todaysTopics ;
+	
+	private List<GenericPager<TopicModel>> desertedTopics ;
 
 	public List<GenericPager<TopicModel>> getPopularTopics() {
 		return popularTopics;
@@ -26,6 +28,14 @@ public class MainPageModel extends EksiBaseModel{
 	
 	public void setTodaysTopics(List<GenericPager<TopicModel>> todaysTopics) {
 		this.todaysTopics = todaysTopics;
+	}
+	
+	public List<GenericPager<TopicModel>> getDesertedTopics() {
+		return desertedTopics;
+	}
+	
+	public void setDesertedTopics(List<GenericPager<TopicModel>> desertedTopics) {
+		this.desertedTopics = desertedTopics;
 	}
 	
 	

@@ -1,6 +1,7 @@
 package org.borademir.eksici.api.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -50,6 +51,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		if(!hasNext){
 			return null;
 		}
+		
 		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
 		
 		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
@@ -69,55 +71,17 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		 * parse next page link if exists
 		 */
 		Element nextPageElement = doc.select("div.full-index-continue-link-container > a").first();
-		if(nextPageElement == null){
-			Element pagerDivelement = doc.select("div.pager").first();
-			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
-			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			if(currentPage < maxPage){
-				String nextPageNumber = String.valueOf(currentPage+1);
-				String href = MessageFormat.format(URLDecoder.decode(pagerDivelement.attr("data-urltemplate"),"UTF-8"),nextPageNumber);
-				currentPopularPage.setNextPageHref(href);
-			}
-		}else{
-			currentPopularPage.setNextPageHref(nextPageElement.attr("href"));
-		}
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		
-		Element topicListElement = doc.getElementsByAttributeValue("class", "topic-list partial").get(0);
-		Elements liElements = topicListElement.getElementsByTag("li");
-		List<TopicModel> topicList = new ArrayList<TopicModel>();
-		for(Element liEl : liElements){
-			if(liEl.id().contains("sponsored-index")){
-				continue;
-			}
-			Element topicElement = liEl.getElementsByTag("a").get(0);
-			String href = topicElement.attr("href");
-			String topicText = ((TextNode)topicElement.childNode(0)).text();
-			String topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
-			
-			TopicModel tm = new TopicModel();
-			tm.setHref(href);
-			if(href.contains("?")){
-				tm.setOriginalUrl(href.split("\\?")[0]);
-			}else{
-				tm.setOriginalUrl(href);
-			}
-			tm.setTopicPopularEntryCount(topicPopularEntryCount);
-			tm.setTopicText(topicText);
-			tm.setType(TopicTypes.POPULAR);
-			
-			topicList.add(tm);
-		}
-		
-		
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.POPULAR);
 		currentPopularPage.setContentList(topicList);
+		
 		if(mainPage.getPopularTopics() == null){
 			mainPage.setPopularTopics(new ArrayList<GenericPager<TopicModel>>());
 		}
 		mainPage.getPopularTopics().add(currentPopularPage);
 		return currentPopularPage;
 	}
-
 	
 	@Override
 	public GenericPager<TopicModel> retrieveTodaysTopics(MainPageModel mainPage) throws IOException {
@@ -146,64 +110,17 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.method(Method.GET);
 		
-		
-		
-		
-		
 		Response response = conn.execute();
 		
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
-//		System.out.println(doc.html());
-		
 		/**
 		 * parse next page link if exists
 		 */
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
-		if(nextPageElement == null){
-			Element pagerDivelement = doc.select("div.pager").first();
-			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
-			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			if(currentPage < maxPage){
-				String nextPageNumber = String.valueOf(currentPage+1);
-				String href = MessageFormat.format(URLDecoder.decode(pagerDivelement.attr("data-urltemplate"),"UTF-8"),nextPageNumber);
-				currentPopularPage.setNextPageHref(href);
-			}
-		}else{
-			currentPopularPage.setNextPageHref(nextPageElement.attr("href"));
-		}
-		
-		Element topicListElement = doc.getElementsByAttributeValue("class", "topic-list partial").get(0);
-		Elements liElements = topicListElement.getElementsByTag("li");
-		List<TopicModel> topicList = new ArrayList<TopicModel>();
-		for(Element liEl : liElements){
-			if(liEl.id().contains("sponsored-index")){
-				continue;
-			}
-			Element topicElement = liEl.getElementsByTag("a").get(0);
-			String href = topicElement.attr("href");
-			String topicText = ((TextNode)topicElement.childNode(0)).text();
-			String topicPopularEntryCount = "0";
-			TopicModel tm = new TopicModel();
-			try {
-				topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
-				tm.setTopicPopularEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
-			} catch (Exception e) {
-			}
-			
-			tm.setHref(href);
-			if(href.contains("?")){
-				tm.setOriginalUrl(href.split("\\?")[0]);
-			}else{
-				tm.setOriginalUrl(href);
-			}
-			tm.setTopicText(topicText);
-			tm.setType(TopicTypes.TODAYS);
-			
-			topicList.add(tm);
-		}
-		
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS);
 		currentPopularPage.setContentList(topicList);
 		if(mainPage.getTodaysTopics() == null){
 			mainPage.setTodaysTopics(new ArrayList<GenericPager<TopicModel>>());
@@ -211,14 +128,14 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		mainPage.getTodaysTopics().add(currentPopularPage);
 		return currentPopularPage;
 	}
-	
+
 	@Override
 	public GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel mainPage) throws IOException {
 
 		boolean hasNext = true;
 		String targetUrl = EksiciResourceUtil.getDesertedTopicsUrl(System.currentTimeMillis());
-		if(mainPage.getTodaysTopics() != null && mainPage.getTodaysTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getTodaysTopics().get(mainPage.getTodaysTopics().size()-1);
+		if(mainPage.getDesertedTopics() != null && mainPage.getDesertedTopics().size() > 0){
+			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getDesertedTopics().get(mainPage.getDesertedTopics().size()-1);
 			if(lastPageOfPopularTopics.getNextPageHref() == null){
 				hasNext = false;
 			}else{
@@ -250,54 +167,15 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		 * parse next page link if exists
 		 */
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
-		if(nextPageElement == null){
-			Element pagerDivelement = doc.select("div.pager").first();
-			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
-			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			if(currentPage < maxPage){
-				String nextPageNumber = String.valueOf(currentPage+1);
-				String href = MessageFormat.format(URLDecoder.decode(pagerDivelement.attr("data-urltemplate"),"UTF-8"),nextPageNumber);
-				currentPopularPage.setNextPageHref(href);
-			}
-		}else{
-			currentPopularPage.setNextPageHref(nextPageElement.attr("href"));
-		}
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		Element topicListElement = doc.getElementsByAttributeValue("class", "topic-list partial").get(0);
-		Elements liElements = topicListElement.getElementsByTag("li");
-		List<TopicModel> topicList = new ArrayList<TopicModel>();
-		for(Element liEl : liElements){
-			if(liEl.id().contains("sponsored-index")){
-				continue;
-			}
-			Element topicElement = liEl.getElementsByTag("a").get(0);
-			String href = topicElement.attr("href");
-			String topicText = ((TextNode)topicElement.childNode(0)).text();
-			String topicPopularEntryCount = "0";
-			TopicModel tm = new TopicModel();
-			try {
-				topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
-				tm.setTopicPopularEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
-			} catch (Exception e) {
-			}
-			
-			tm.setHref(href);
-			if(href.contains("?")){
-				tm.setOriginalUrl(href.split("\\?")[0]);
-			}else{
-				tm.setOriginalUrl(href);
-			}
-			tm.setTopicText(topicText);
-			tm.setType(TopicTypes.TODAYS);
-			
-			topicList.add(tm);
-		}
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED);
 		
 		currentPopularPage.setContentList(topicList);
-		if(mainPage.getTodaysTopics() == null){
-			mainPage.setTodaysTopics(new ArrayList<GenericPager<TopicModel>>());
+		if(mainPage.getDesertedTopics() == null){
+			mainPage.setDesertedTopics(new ArrayList<GenericPager<TopicModel>>());
 		}
-		mainPage.getTodaysTopics().add(currentPopularPage);
+		mainPage.getDesertedTopics().add(currentPopularPage);
 		return currentPopularPage;
 	}
 	
@@ -414,6 +292,57 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		pTopic.getEntryList().add(currentPageModel);
 		return currentPageModel;
 	
+	}
+	
+	
+	static class JsoupHtmlParser {
+		
+		private static void parseNextPageForTopicPage(GenericPager<TopicModel> currentPopularPage, Document doc,Element nextPageElement) throws UnsupportedEncodingException {
+			if(nextPageElement == null){
+				Element pagerDivelement = doc.select("div.pager").first();
+				int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
+				int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
+				if(currentPage < maxPage){
+					String nextPageNumber = String.valueOf(currentPage+1);
+					String href = MessageFormat.format(URLDecoder.decode(pagerDivelement.attr("data-urltemplate"),"UTF-8"),nextPageNumber);
+					currentPopularPage.setNextPageHref(href);
+				}
+			}else{
+				currentPopularPage.setNextPageHref(nextPageElement.attr("href"));
+			}
+		}
+		
+		private static List<TopicModel> parseTopicList(Document doc, TopicTypes pTopicType) {
+			Element topicListElement = doc.getElementsByAttributeValue("class", "topic-list partial").get(0);
+			Elements liElements = topicListElement.getElementsByTag("li");
+			List<TopicModel> topicList = new ArrayList<TopicModel>();
+			for(Element liEl : liElements){
+				if(liEl.id().contains("sponsored-index")){
+					continue;
+				}
+				Element topicElement = liEl.getElementsByTag("a").get(0);
+				String href = topicElement.attr("href");
+				String topicText = ((TextNode)topicElement.childNode(0)).text();
+				String topicPopularEntryCount = "0";
+				TopicModel tm = new TopicModel();
+				try {
+					topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
+					tm.setTopicPopularEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
+				} catch (Exception e) {
+				}
+				tm.setHref(href);
+				if(href.contains("?")){
+					tm.setOriginalUrl(href.split("\\?")[0]);
+				}else{
+					tm.setOriginalUrl(href);
+				}
+				tm.setTopicText(topicText);
+				tm.setType(pTopicType);
+				
+				topicList.add(tm);
+			}
+			return topicList;
+		}
 	}
 
 }

@@ -32,41 +32,54 @@ public class ServiceTester {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		
 		MainPageModel mainPage = new MainPageModel();
-//		GenericPager<TopicModel> popularTopicCurrentPage = null;
-//		log.debug("Popular Topics:");
-//		while((popularTopicCurrentPage = eksiciService.retrievePopularTopics(mainPage)) != null){
-//			for(TopicModel tm : popularTopicCurrentPage.getContentList()){
-//				log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
-//				GenericPager<EntryModel> currentPage = null;
-//				while((currentPage = eksiciService.retriveEntries(tm)) != null){
-//					printEntryModel(currentPage);
-//				}
-//			}
-//		}
-
-//		log.debug("Todays Topics:");
-//		GenericPager<TopicModel> todaysTopicCurrentPage = null;
-//		while((todaysTopicCurrentPage = eksiciService.retrieveTodaysTopics(mainPage)) != null){
-//			for(TopicModel tm : todaysTopicCurrentPage.getContentList()){
-//				log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
+		
+		boolean processPopulars = false;
+		boolean processTodays = false;
+		boolean processDeserted = true;
+		
+		
+		if(processPopulars){
+			GenericPager<TopicModel> popularTopicCurrentPage = null;
+			log.debug("Popular Topics:");
+			while((popularTopicCurrentPage = eksiciService.retrievePopularTopics(mainPage)) != null){
+				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
 //				GenericPager<EntryModel> currentPage = null;
 //				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //					printEntryModel(currentPage);
 //				}
-//			}
-//		}
+				}
+			}
+		}
+
+
+		if(processTodays){
+			log.debug("Todays Topics:");
+			GenericPager<TopicModel> todaysTopicCurrentPage = null;
+			while((todaysTopicCurrentPage = eksiciService.retrieveTodaysTopics(mainPage)) != null){
+				for(TopicModel tm : todaysTopicCurrentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
+//				GenericPager<EntryModel> currentPage = null;
+//				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
+//					printEntryModel(currentPage);
+//				}
+				}
+			}
+		}
 		
 		
-		log.debug("Deserted Topics:");
-		GenericPager<TopicModel> desertedTopicCurrentPage = null;
-		while((desertedTopicCurrentPage = eksiciService.retrieveDesertedTopics(mainPage)) != null){
-			for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
-				log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getOriginalUrl());
+		if(processDeserted){
+			log.debug("Deserted Topics:");
+			GenericPager<TopicModel> desertedTopicCurrentPage = null;
+			while((desertedTopicCurrentPage = eksiciService.retrieveDesertedTopics(mainPage)) != null){
+				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getOriginalUrl());
 //				GenericPager<EntryModel> currentPage = null;
 //				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //					printEntryModel(currentPage);
 //				}
 //				break;
+				}
 			}
 		}
 		
