@@ -39,6 +39,7 @@ public class ServiceTester {
 		boolean processTodays = false;
 		boolean processDeserted = false;
 		boolean processTodayInHistory = false;
+		boolean processChannels = true;
 		
 		
 		if(processPopulars){
@@ -101,15 +102,17 @@ public class ServiceTester {
 			}
 		}
 		
-		log.debug("Channels:");
-		List<ChannelModel> channels = eksiciService.retrieveChannels(mainPage);
-		for(ChannelModel channel : channels){
-			log.debug(channel.getName() + " (" + channel.getTitle() + ") -- " + channel.getHref() );
-			GenericPager<TopicModel> channelTopics = null;
-			while((channelTopics = eksiciService.retrieveChannelTopics(channel)) != null){
+		if(processChannels){
+			log.debug("Channels:");
+			List<ChannelModel> channels = eksiciService.retrieveChannels(mainPage);
+			for(ChannelModel channel : channels){
+				log.debug(channel.getName() + " (" + channel.getTitle() + ") -- " + channel.getHref() );
+				GenericPager<TopicModel> channelTopics = null;
+				while((channelTopics = eksiciService.retrieveChannelTopics(channel)) != null){
 //				for(TopicModel tm : channelTopics.getContentList()){
 //					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
 //				}
+				}
 			}
 		}
 		
