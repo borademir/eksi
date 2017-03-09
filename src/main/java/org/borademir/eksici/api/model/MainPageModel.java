@@ -19,7 +19,11 @@ public class MainPageModel extends EksiBaseModel{
 	private List<GenericPager<TopicModel>> todayInHistoryTopics ;
 	
 	private List<ChannelModel> channels ;
+	
+	private List<GenericPager<TopicModel>> searchResults ;
 
+	private SearchCriteriaModel searchCriteria;
+	
 	public List<GenericPager<TopicModel>> getPopularTopics() {
 		return popularTopics;
 	}
@@ -67,6 +71,22 @@ public class MainPageModel extends EksiBaseModel{
 
 	public void setVideoTopics(List<GenericPager<TopicModel>> videoTopics) {
 		this.videoTopics = videoTopics;
+	}
+
+	public List<GenericPager<TopicModel>> getSearchResults() {
+		return searchResults;
+	}
+
+	public void setSearchResults(List<GenericPager<TopicModel>> searchResults) {
+		this.searchResults = searchResults;
+	}
+
+	public SearchCriteriaModel getSearchCriteria() {
+		return searchCriteria;
+	}
+
+	public void setSearchCriteria(SearchCriteriaModel searchCriteria) {
+		this.searchCriteria = searchCriteria;
 	}
 	
 	

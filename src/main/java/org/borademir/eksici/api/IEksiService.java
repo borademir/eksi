@@ -24,10 +24,12 @@ public interface IEksiService extends IEksiBaseService{
 	
 	GenericPager<TopicModel> retrieveTodayInHistoryTopics(MainPageModel mainPage, int pYear) throws IOException;
 	
-	GenericPager<EntryModel> retriveEntries(TopicModel pTopic,SukelaMode pSukelaMod)  throws IOException;
+	GenericPager<EntryModel> retrieveEntries(TopicModel pTopic,SukelaMode pSukelaMod)  throws IOException;
 	
 	List<ChannelModel> retrieveChannels(MainPageModel pMainPage) throws IOException;
 
 	GenericPager<TopicModel> retrieveVideos(MainPageModel pMainPage)	throws IOException;
+
+	GenericPager<TopicModel> search(MainPageModel pMainPage) throws EksiApiException, IOException;
 
 }

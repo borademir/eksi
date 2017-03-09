@@ -4,6 +4,6 @@ package org.borademir.eksici.api.model;
  */
 public enum TopicTypes {
 	
-	POPULAR, TODAYS , DESERTED, CHANNEL
+	POPULAR, TODAYS , DESERTED, CHANNEL, SEARCH_RESULT
 
 }

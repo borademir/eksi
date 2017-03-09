@@ -1,22 +1,18 @@
 package org.borademir.eksici.api.test;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.EksiApiServiceFactory;
 import org.borademir.eksici.api.IEksiService;
 import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
+import org.borademir.eksici.api.model.SearchCriteriaModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.util.EksiciDateUtil;
 /**
@@ -35,7 +31,8 @@ public class ServiceTester {
 	
 	static EntryModel maxFav = null;
 	
-	public static void main(String[] args) throws IOException, ParseException {
+	@SuppressWarnings("unused")
+	public static void main(String[] args) throws IOException, ParseException, EksiApiException {
 		
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		
@@ -46,7 +43,9 @@ public class ServiceTester {
 		boolean processDeserted = false;
 		boolean processTodayInHistory = false;
 		boolean processChannels = false;
-		boolean processVideos = true;
+		boolean processVideos = false;
+		
+		boolean processSearch = true;
 		
 		
 		
@@ -55,7 +54,7 @@ public class ServiceTester {
 			log.debug("Popular Topics:");
 			while((popularTopicCurrentPage = eksiciService.retrievePopularTopics(mainPage)) != null){
 				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
 //				GenericPager<EntryModel> currentPage = null;
 //				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //					printEntryModel(currentPage);
@@ -70,7 +69,7 @@ public class ServiceTester {
 			GenericPager<TopicModel> todaysTopicCurrentPage = null;
 			while((todaysTopicCurrentPage = eksiciService.retrieveTodaysTopics(mainPage)) != null){
 				for(TopicModel tm : todaysTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
 //				GenericPager<EntryModel> currentPage = null;
 //				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //					printEntryModel(currentPage);
@@ -85,7 +84,7 @@ public class ServiceTester {
 			GenericPager<TopicModel> desertedTopicCurrentPage = null;
 			while((desertedTopicCurrentPage = eksiciService.retrieveDesertedTopics(mainPage)) != null){
 				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getOriginalUrl());
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
 //				GenericPager<EntryModel> currentPage = null;
 //				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //					printEntryModel(currentPage);
@@ -100,7 +99,7 @@ public class ServiceTester {
 			GenericPager<TopicModel> desertedTopicCurrentPage = null;
 			while((desertedTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(mainPage,1999)) != null){
 				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
 //					GenericPager<EntryModel> currentPage = null;
 //					while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
 //						printEntryModel(currentPage);
@@ -130,7 +129,31 @@ public class ServiceTester {
 			GenericPager<TopicModel> videoTopicCurrentPage = null;
 			while((videoTopicCurrentPage = eksiciService.retrieveVideos(mainPage)) != null){
 				for(TopicModel tm : videoTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getOriginalUrl());
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
+					GenericPager<EntryModel> currentPage = null;
+					while((currentPage = eksiciService.retrieveEntries(tm,null)) != null){
+						printEntryModel(currentPage);
+					}
+//					break;
+				}
+			}
+		}
+		
+		if(processSearch){
+			SearchCriteriaModel searchCriteriaModel = new SearchCriteriaModel();
+			searchCriteriaModel.setKeywords("aykut"); 
+			searchCriteriaModel.setAuthor("qlluq");
+			mainPage.setSearchCriteria(searchCriteriaModel);
+			log.debug(searchCriteriaModel);
+			log.debug("Search results:");
+			GenericPager<TopicModel> searchResults = null;
+			while((searchResults = eksiciService.search(mainPage)) != null){
+				for(TopicModel tm : searchResults.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
+					GenericPager<EntryModel> currentPage = null;
+					while((currentPage = eksiciService.retrieveEntries(tm,null)) != null){
+						printEntryModel(currentPage);
+					}
 				}
 			}
 		}

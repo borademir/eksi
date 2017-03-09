@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.IEksiService;
 import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
@@ -75,13 +76,98 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Element nextPageElement = doc.select("div.full-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.POPULAR);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.POPULAR,"topic-list partial");
 		currentPopularPage.setContentList(topicList);
 		
 		if(mainPage.getPopularTopics() == null){
 			mainPage.setPopularTopics(new ArrayList<GenericPager<TopicModel>>());
 		}
 		mainPage.getPopularTopics().add(currentPopularPage);
+		return currentPopularPage;
+	}
+	
+	@Override
+	public GenericPager<TopicModel> search(MainPageModel mainPage) throws EksiApiException, IOException {
+		
+		if(mainPage.getSearchCriteria() == null){
+			throw new EksiApiException("Arama kriterleri boş olamaz..");
+		}
+		
+		boolean hasNext = true;
+		int page=1;
+		String targetUrl = EksiciResourceUtil.getSearchUrl();
+		if(mainPage.getSearchResults() != null && mainPage.getSearchResults().size() > 0){
+			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getSearchResults().get(mainPage.getSearchResults().size()-1);
+			if(lastPageOfPopularTopics.getNextPageHref() == null){
+				hasNext = false;
+			}else{
+//				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
+				page = mainPage.getSearchResults().size() + 1;
+			}
+		}
+		if(!hasNext){
+			return null;
+		}
+		
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
+		
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+
+		conn.data("p",String.valueOf(page));
+		
+		boolean processSearch  = false;
+		if(mainPage.getSearchCriteria().getKeywords() != null){
+			conn.data("SearchForm.Keywords",mainPage.getSearchCriteria().getKeywords());
+			processSearch  = true;
+		}
+		
+		if(mainPage.getSearchCriteria().getAuthor() != null){
+			conn.data("SearchForm.Author",mainPage.getSearchCriteria().getAuthor());
+			processSearch  = true;
+		}
+		
+		if(mainPage.getSearchCriteria().getDateStart() != null){
+			conn.data("SearchForm.When.From",mainPage.getSearchCriteria().getDateStart());
+		}
+		
+		if(mainPage.getSearchCriteria().getDateEnd() != null){
+			conn.data("SearchForm.When.To",mainPage.getSearchCriteria().getDateEnd());
+		}
+		
+		if(mainPage.getSearchCriteria().isNiceOnly()){
+			conn.data("SearchForm.NiceOnly" , "true");
+		}
+		
+		if(mainPage.getSearchCriteria().getSortOrder() != null){
+			conn.data("SearchForm.SortOrder",mainPage.getSearchCriteria().getSortOrder().getName());
+		}
+		
+		if(!processSearch){
+			throw new EksiApiException("Yazar ya da kelime seçmelisiniz.");
+		}
+		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		
+		/**
+		 * parse next page link if exists
+		 */
+		Element nextPageElement = doc.select("div.full-index-continue-link-container > a").first();
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.SEARCH_RESULT,"topic-list");
+		currentPopularPage.setContentList(topicList);
+		
+		if(mainPage.getSearchResults() == null){
+			mainPage.setSearchResults(new ArrayList<GenericPager<TopicModel>>());
+		}
+		mainPage.getSearchResults().add(currentPopularPage);
 		return currentPopularPage;
 	}
 	
@@ -122,7 +208,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		 */
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS,"topic-list partial");
 		currentPopularPage.setContentList(topicList);
 		if(mainPage.getTodaysTopics() == null){
 			mainPage.setTodaysTopics(new ArrayList<GenericPager<TopicModel>>());
@@ -171,7 +257,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED,"topic-list partial");
 		
 		currentPopularPage.setContentList(topicList);
 		if(mainPage.getDesertedTopics() == null){
@@ -220,7 +306,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED,"topic-list partial");
 		
 		currentPopularPage.setContentList(topicList);
 		if(pMainPage.getVideoTopics() == null){
@@ -268,7 +354,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		 */
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS,"topic-list partial");
 		currentPopularPage.setContentList(topicList);
 		if(mainPage.getTodayInHistoryTopics() == null){
 			mainPage.setTodayInHistoryTopics(new ArrayList<GenericPager<TopicModel>>());
@@ -278,7 +364,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 	
 	@Override
-	public GenericPager<EntryModel> retriveEntries(TopicModel pTopic,SukelaMode pSukelaMod) throws IOException {
+	public GenericPager<EntryModel> retrieveEntries(TopicModel pTopic,SukelaMode pSukelaMod) throws IOException {
 		
 		int targetPage = 1;
 		
@@ -429,7 +515,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.CHANNEL);
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.CHANNEL,"topic-list partial");
 		
 		currentPopularPage.setContentList(topicList);
 		if(pChannel.getTopics() == null){
@@ -491,10 +577,14 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			}
 		}
 		
-		private static List<TopicModel> parseTopicList(Document doc, TopicTypes pTopicType) {
-			Element topicListElement = doc.getElementsByAttributeValue("class", "topic-list partial").get(0);
-			Elements liElements = topicListElement.getElementsByTag("li");
+		private static List<TopicModel> parseTopicList(Document doc, TopicTypes pTopicType, String pTopicListDivClass) {
+			ArrayList<Element> ulElements = doc.getElementsByAttributeValue("class", pTopicListDivClass);
 			List<TopicModel> topicList = new ArrayList<TopicModel>();
+			if(ulElements == null || ulElements.size() == 0){ 
+				return topicList;
+			}
+			Element topicListElement = ulElements.get(0);
+			Elements liElements = topicListElement.getElementsByTag("li");
 			for(Element liEl : liElements){
 				if(liEl.id().contains("sponsored-index")){
 					continue;
@@ -506,9 +596,9 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				TopicModel tm = new TopicModel();
 				try {
 					topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
-					tm.setTopicPopularEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
+					tm.setRelatedEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
 				} catch (Exception e) {
-					tm.setTopicPopularEntryCount("0");
+					tm.setRelatedEntryCount("0");
 				}
 				tm.setHref(href);
 				if(href.contains("?")){

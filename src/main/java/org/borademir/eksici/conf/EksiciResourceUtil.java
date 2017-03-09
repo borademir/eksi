@@ -71,6 +71,10 @@ public class EksiciResourceUtil {
 		return PROPERTIES.getProperty("url.useragent") ;
 	}
 	
+	public static String getSearchUrl(){
+		return PROPERTIES.getProperty("url.search") ;
+	}
+	
 	public static String getHeaderReferrer(){
 		return PROPERTIES.getProperty("header.referer");
 	}

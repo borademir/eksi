@@ -12,7 +12,7 @@ public class TopicModel extends EksiBaseModel {
 	private String href;
 	private String originalUrl ;
 	private String topicText;
-	private String topicPopularEntryCount;
+	private String relatedEntryCount;
 	private TopicTypes type ;
 	private TopicViewType viewType ;
 	private List<GenericPager<EntryModel>> entryList ;
@@ -31,11 +31,11 @@ public class TopicModel extends EksiBaseModel {
 	public void setTopicText(String topicText) {
 		this.topicText = topicText;
 	}
-	public String getTopicPopularEntryCount() {
-		return topicPopularEntryCount;
+	public String getRelatedEntryCount() {
+		return relatedEntryCount;
 	}
-	public void setTopicPopularEntryCount(String topicPopularEntryCount) {
-		this.topicPopularEntryCount = topicPopularEntryCount;
+	public void setRelatedEntryCount(String topicPopularEntryCount) {
+		this.relatedEntryCount = topicPopularEntryCount;
 	}
 	public TopicTypes getType() {
 		return type;
