@@ -14,11 +14,11 @@ import org.borademir.eksici.api.model.TopicModel;
  */
 public interface IEksiService extends IEksiBaseService{
 	
-	GenericPager<TopicModel> retrievePopularTopics(MainPageModel mainPage) throws IOException;
+	GenericPager<TopicModel> retrievePopularTopics(MainPageModel pMainPage) throws IOException;
 	
-	GenericPager<TopicModel> retrieveTodaysTopics(MainPageModel mainPage) throws IOException;
+	GenericPager<TopicModel> retrieveTodaysTopics(MainPageModel pMainPage) throws IOException;
 	
-	GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel mainPage) throws IOException;
+	GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel pMainPage) throws IOException;
 	
 	GenericPager<TopicModel> retrieveChannelTopics(ChannelModel pChannel) throws IOException;
 	
@@ -26,6 +26,8 @@ public interface IEksiService extends IEksiBaseService{
 	
 	GenericPager<EntryModel> retriveEntries(TopicModel pTopic,SukelaMode pSukelaMod)  throws IOException;
 	
-	List<ChannelModel> retrieveChannels(MainPageModel mainPage) throws IOException;
+	List<ChannelModel> retrieveChannels(MainPageModel pMainPage) throws IOException;
+
+	GenericPager<TopicModel> retrieveVideos(MainPageModel pMainPage)	throws IOException;
 
 }

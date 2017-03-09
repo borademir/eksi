@@ -183,6 +183,54 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	
 	
 	@Override
+	public GenericPager<TopicModel> retrieveVideos(MainPageModel pMainPage) throws IOException {
+
+		boolean hasNext = true;
+		String targetUrl = EksiciResourceUtil.getVideosUrl(System.currentTimeMillis());
+		if(pMainPage.getVideoTopics() != null && pMainPage.getVideoTopics().size() > 0){
+			GenericPager<TopicModel> lastPageOfPopularTopics = pMainPage.getVideoTopics().get(pMainPage.getVideoTopics().size()-1);
+			if(lastPageOfPopularTopics.getNextPageHref() == null){
+				hasNext = false;
+			}else{
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
+			}
+		}
+		if(!hasNext){
+			return null;
+		}
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
+		
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
+		
+		Document doc = response.parse();
+		
+		/**
+		 * parse next page link if exists
+		 */
+		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED);
+		
+		currentPopularPage.setContentList(topicList);
+		if(pMainPage.getVideoTopics() == null){
+			pMainPage.setVideoTopics(new ArrayList<GenericPager<TopicModel>>());
+		}
+		pMainPage.getVideoTopics().add(currentPopularPage);
+		return currentPopularPage;
+	}
+	
+	@Override
 	public GenericPager<TopicModel> retrieveTodayInHistoryTopics(MainPageModel mainPage, int pYear) throws IOException {
 
 		boolean hasNext = true;

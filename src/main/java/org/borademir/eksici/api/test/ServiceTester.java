@@ -1,7 +1,13 @@
 package org.borademir.eksici.api.test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -20,12 +26,12 @@ public class ServiceTester {
 	
 	static Logger log = Logger.getLogger(ServiceTester.class);
 	
-//	static {
-//		System.setProperty("http.proxyHost"  , "172.16.64.74");
-//		System.setProperty("http.proxyPort"  , "8080");
-//		System.setProperty("https.proxyHost" , "172.16.64.74");
-//		System.setProperty("https.proxyPort" , "8080");
-//	}
+	static {
+		System.setProperty("http.proxyHost"  , "172.16.64.74");
+		System.setProperty("http.proxyPort"  , "8080");
+		System.setProperty("https.proxyHost" , "172.16.64.74");
+		System.setProperty("https.proxyPort" , "8080");
+	}
 	
 	static EntryModel maxFav = null;
 	
@@ -39,7 +45,9 @@ public class ServiceTester {
 		boolean processTodays = false;
 		boolean processDeserted = false;
 		boolean processTodayInHistory = false;
-		boolean processChannels = true;
+		boolean processChannels = false;
+		boolean processVideos = true;
+		
 		
 		
 		if(processPopulars){
@@ -117,6 +125,17 @@ public class ServiceTester {
 		}
 		
 		
+		if(processVideos){
+			log.debug("Video Topics:");
+			GenericPager<TopicModel> videoTopicCurrentPage = null;
+			while((videoTopicCurrentPage = eksiciService.retrieveVideos(mainPage)) != null){
+				for(TopicModel tm : videoTopicCurrentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getOriginalUrl());
+				}
+			}
+		}
+		
+		
 //		log.debug(maxFav.getEntryHref());
 //		log.debug(maxFav.getEntryText());
 //		log.debug(maxFav.getFavoriteCount());
@@ -141,6 +160,7 @@ public class ServiceTester {
 		 
 		}
 	}
+	
 
 
 }

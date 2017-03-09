@@ -14,6 +14,8 @@ public class MainPageModel extends EksiBaseModel{
 	
 	private List<GenericPager<TopicModel>> desertedTopics ;
 	
+	private List<GenericPager<TopicModel>> videoTopics ;
+	
 	private List<GenericPager<TopicModel>> todayInHistoryTopics ;
 	
 	private List<ChannelModel> channels ;
@@ -57,6 +59,14 @@ public class MainPageModel extends EksiBaseModel{
 
 	public void setChannels(List<ChannelModel> channels) {
 		this.channels = channels;
+	}
+
+	public List<GenericPager<TopicModel>> getVideoTopics() {
+		return videoTopics;
+	}
+
+	public void setVideoTopics(List<GenericPager<TopicModel>> videoTopics) {
+		this.videoTopics = videoTopics;
 	}
 	
 	
