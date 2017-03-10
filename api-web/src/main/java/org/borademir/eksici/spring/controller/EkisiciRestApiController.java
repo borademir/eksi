@@ -1,6 +1,9 @@
 package org.borademir.eksici.spring.controller;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
@@ -169,13 +172,15 @@ public class EkisiciRestApiController {
 	public ResponseEntity<List<GenericPager<TopicModel>>> channelTopics(@PathVariable("channel") String pChannelName) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
-			log.debug("Channel Topics:");
+			log.debug("Channel Topics:" + URLEncoder.encode(pChannelName,"UTF-8"));
 			GenericPager<TopicModel> channelTopics = null;
 			ChannelModel channelInput = null;
 			
 			List<ChannelModel> channels = eksiciService.retrieveChannels();
 			for(ChannelModel channel : channels){
-				if(channel.getName().contains(pChannelName)){
+				String decodedHref = URLDecoder.decode(channel.getHref(), "UTF-8");
+				log.debug(decodedHref + " - " + channel.getName());
+				if(channel.getName().equals("#"+pChannelName)){
 					channelInput = channel;
 					break;
 				}
