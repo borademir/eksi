@@ -58,7 +58,7 @@
 		
 	</dependencies>
 	<build>
-		<finalName>eksici-api-web</finalName>
+		<finalName>eksici-api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
