@@ -31,7 +31,7 @@ public class ServiceTester {
 		
 		MainPageModel mainPage = new MainPageModel();
 		
-		boolean processPopulars = false;
+		boolean processPopulars = true;
 		boolean processTodays = false;
 		boolean processDeserted = false;
 		boolean processTodayInHistory = false;
@@ -104,7 +104,7 @@ public class ServiceTester {
 		
 		if(processChannels){
 			log.debug("Channels:");
-			List<ChannelModel> channels = eksiciService.retrieveChannels(mainPage);
+			List<ChannelModel> channels = eksiciService.retrieveChannels();
 			for(ChannelModel channel : channels){
 				log.debug(channel.getName() + " (" + channel.getTitle() + ") -- " + channel.getHref() );
 				GenericPager<TopicModel> channelTopics = null;

@@ -530,7 +530,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 
 	
 	@Override
-	public List<ChannelModel> retrieveChannels(MainPageModel mainPage)throws IOException {
+	public List<ChannelModel> retrieveChannels()throws IOException {
 		
 		Connection conn = Jsoup.connect(EksiciResourceUtil.getHeaderReferrer()).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")

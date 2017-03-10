@@ -26,7 +26,7 @@ public interface IEksiService extends IEksiBaseService{
 	
 	GenericPager<EntryModel> retrieveEntries(TopicModel pTopic,SukelaMode pSukelaMod)  throws IOException;
 	
-	List<ChannelModel> retrieveChannels(MainPageModel pMainPage) throws IOException;
+	List<ChannelModel> retrieveChannels() throws IOException;
 
 	GenericPager<TopicModel> retrieveVideos(MainPageModel pMainPage)	throws IOException;
 
