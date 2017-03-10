@@ -22,13 +22,6 @@ public class ServiceTester {
 	
 	static Logger log = Logger.getLogger(ServiceTester.class);
 	
-	static {
-		System.setProperty("http.proxyHost"  , "172.16.64.74");
-		System.setProperty("http.proxyPort"  , "8080");
-		System.setProperty("https.proxyHost" , "172.16.64.74");
-		System.setProperty("https.proxyPort" , "8080");
-	}
-	
 	static EntryModel maxFav = null;
 	
 	@SuppressWarnings("unused")

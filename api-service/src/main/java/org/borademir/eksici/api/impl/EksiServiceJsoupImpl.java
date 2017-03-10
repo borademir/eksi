@@ -20,6 +20,7 @@ import org.borademir.eksici.api.model.SukelaMode;
 import org.borademir.eksici.api.model.SuserModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.api.model.TopicTypes;
+import org.borademir.eksici.api.test.ServiceTester;
 import org.borademir.eksici.conf.EksiciResourceUtil;
 import org.borademir.eksici.util.EksiciDateUtil;
 import org.jsoup.Connection;
@@ -95,6 +96,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		boolean hasNext = true;
 		int page=1;
+		System.out.println(ServiceTester.class.getResource("/").getFile());
 		String targetUrl = EksiciResourceUtil.getSearchUrl();
 		if(mainPage.getSearchResults() != null && mainPage.getSearchResults().size() > 0){
 			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getSearchResults().get(mainPage.getSearchResults().size()-1);

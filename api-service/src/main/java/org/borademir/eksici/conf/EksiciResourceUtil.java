@@ -11,6 +11,14 @@ import org.apache.log4j.Logger;
  */
 public class EksiciResourceUtil {
 	
+	
+	static {
+		System.setProperty("http.proxyHost"  , "172.16.64.74");
+		System.setProperty("http.proxyPort"  , "8080");
+		System.setProperty("https.proxyHost" , "172.16.64.74");
+		System.setProperty("https.proxyPort" , "8080");
+	}
+	
 	static final Properties PROPERTIES = load()  ;
 	
 	public static void main(String[] args) {
@@ -21,19 +29,19 @@ public class EksiciResourceUtil {
 	
 	private static Properties load(){
 		
-		
 //		BasicConfigurator.configure();
 		
 		Properties retProp = new Properties();
 		InputStream input = null;
 		;
 		try {
+			
 			input = new FileInputStream(EksiciResourceUtil.class.getResource("/config.properties").getFile());
 			retProp.load(input);
 
 		} catch (IOException ex) {
-			log.error("Can not load ekisici properies file" , ex);
-//			ex.printStackTrace();
+//			log.error("Can not load ekisici properies file" , ex);
+			ex.printStackTrace();
 		} finally {
 			if (input != null) {
 				try {
