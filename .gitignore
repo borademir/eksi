@@ -10,6 +10,7 @@ buildNumber.properties
 .settings/
 .project
 .classpath
+.factorypath
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
