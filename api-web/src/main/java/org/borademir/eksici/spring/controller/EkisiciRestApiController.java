@@ -3,7 +3,6 @@ package org.borademir.eksici.spring.controller;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
