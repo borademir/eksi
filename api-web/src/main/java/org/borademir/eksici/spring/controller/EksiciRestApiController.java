@@ -29,6 +29,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/")
 public class EksiciRestApiController {
 	
+	private static final String VERSION_ONE = "/v1";
+	
 	static final Logger log = Logger.getLogger(EksiciRestApiController.class);
 	
     @RequestMapping(method = RequestMethod.GET)
@@ -38,7 +40,7 @@ public class EksiciRestApiController {
  
     
 	@SuppressWarnings("unused")
-	@GetMapping("/topic/search")
+	@GetMapping(VERSION_ONE + "/topic/search")
 	public ResponseEntity<List<GenericPager<TopicModel>>> search( 
 			@RequestParam(value="keyword", required=true) String pKeyword,
 			@RequestParam(value="author", required=true) String pAuthor) throws EksiApiException {
@@ -63,7 +65,7 @@ public class EksiciRestApiController {
 	}
 	
 	
-	@GetMapping("/topic/popular")
+	@GetMapping(VERSION_ONE + "/topic/popular")
 	public ResponseEntity<List<GenericPager<TopicModel>>> popularTopics() throws EksiApiException {
 		
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
@@ -83,7 +85,7 @@ public class EksiciRestApiController {
 	}
 	
 	
-	@GetMapping("/topic/today")
+	@GetMapping(VERSION_ONE + "/topic/today")
 	public ResponseEntity<List<GenericPager<TopicModel>>> todaysTopics() throws EksiApiException {
 		
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
@@ -103,7 +105,7 @@ public class EksiciRestApiController {
 	}
 	
 
-	@GetMapping("/topic/deserted")
+	@GetMapping(VERSION_ONE + "/topic/deserted")
 	public ResponseEntity<List<GenericPager<TopicModel>>> desertedTopics() throws EksiApiException {
 		
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
@@ -122,7 +124,7 @@ public class EksiciRestApiController {
 		} 
 	}
 
-	@GetMapping("/topic/videos")
+	@GetMapping(VERSION_ONE + "/topic/videos")
 	public ResponseEntity<List<GenericPager<TopicModel>>> videoTopics() throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		MainPageModel mainPage = new MainPageModel();
@@ -140,7 +142,7 @@ public class EksiciRestApiController {
 		} 
 	}
 
-	@GetMapping("/topic/todayinhistory/{year}")
+	@GetMapping(VERSION_ONE + "/topic/todayinhistory/{year}")
 	public ResponseEntity<List<GenericPager<TopicModel>>> todayInHistory(@PathVariable("year") int pYear) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		MainPageModel mainPage = new MainPageModel();
@@ -159,7 +161,7 @@ public class EksiciRestApiController {
 	}
 
 
-	@GetMapping("/channels")
+	@GetMapping(VERSION_ONE + "/channels")
 	public ResponseEntity<List<ChannelModel>> channels() throws EksiApiException {
 		
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
@@ -176,7 +178,7 @@ public class EksiciRestApiController {
 	}
 
 	
-	@GetMapping("/channels/{channel}/topics") 
+	@GetMapping(VERSION_ONE + "/channels/{channel}/topics") 
 	public ResponseEntity<List<GenericPager<TopicModel>>> channelTopics(@PathVariable("channel") String pChannelName) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {

@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
@@ -11,7 +12,7 @@
 
 </script>
 <title>Eksici - Entry Muhendisi</title>
-<link href="${pageContext.request.contextPath}/resources/vkerem.css" rel="stylesheet" type="text/css">
+<link href="<c:url value="/resources/vkerem.css"/>" rel="stylesheet" type="text/css">
 <style type="text/css">
 body {
 	margin-left: 0px;
@@ -27,7 +28,7 @@ body {
 </head>
 
 <body>
-<div align="center"><img src="${pageContext.request.contextPath}/resources/eksici.png" width="948" height="251" alt="Ekşici">
+<div align="center"><img src="<c:url value="/resources/eksici.png"/>" width="948" height="251" alt="Ekşici">
 <p>&nbsp;</p>
 </div>
 
