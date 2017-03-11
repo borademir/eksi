@@ -4,23 +4,8 @@
 	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 
-	<display-name>Archetype Created Web Application</display-name>
-	<servlet>
-		<servlet-name>simple</servlet-name>
-		<servlet-class>org.sonatype.mavenbook.web.SimpleServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>weather</servlet-name>
-		<servlet-class>org.sonatype.mavenbook.web.WeatherServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>simple</servlet-name>
-		<url-pattern>/simple</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>weather</servlet-name>
-		<url-pattern>/weather</url-pattern>
-	</servlet-mapping>
+	<display-name>Eksici Rest Api</display-name>
+
 
 	<filter>
 		<filter-name>CharacterEncodingFilter</filter-name>

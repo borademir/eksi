@@ -11,7 +11,7 @@
 
 </script>
 <title>Eksici - Entry Muhendisi</title>
-<link href="./files/css" rel="stylesheet" type="text/css">
+<link href="${pageContext.request.contextPath}/resources/vkerem.css" rel="stylesheet" type="text/css">
 <style type="text/css">
 body {
 	margin-left: 0px;
@@ -27,9 +27,8 @@ body {
 </head>
 
 <body>
-<div align="center"><img src="./files/eksici.png" width="948" height="251" alt="Ekşici">
+<div align="center"><img src="${pageContext.request.contextPath}/resources/eksici.png" width="948" height="251" alt="Ekşici">
 <p>&nbsp;</p>
-<p>ekşici çok yakında...</p>
 </div>
 
 

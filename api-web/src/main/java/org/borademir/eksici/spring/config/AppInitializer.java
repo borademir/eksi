@@ -13,7 +13,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class[] getServletConfigClasses() {
-		return null;
+		 return new Class[0];
 	}
 
 	@Override
