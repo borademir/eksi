@@ -6,7 +6,7 @@ public class PagingModel extends EksiBaseModel {
 	
 	private int currentPage = 1;
 	
-	protected boolean hasNext = true;
+	private int maxPage ;
 	
 	public int getCurrentPage() {
 		return currentPage;
@@ -15,9 +15,14 @@ public class PagingModel extends EksiBaseModel {
 	public void setCurrentPage(int currentPage) {
 		this.currentPage = currentPage;
 	}
-	
-	public boolean hasNext(){
-		return hasNext;
+
+	public int getMaxPage() {
+		return maxPage;
 	}
+
+	public void setMaxPage(int maxPage) {
+		this.maxPage = maxPage;
+	}
+	
 	
 }

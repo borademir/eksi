@@ -38,7 +38,7 @@ public class ServiceTester {
 		boolean processChannels = false;
 		boolean processVideos = false;
 		
-		boolean processSearch = true;
+		boolean processSearch = false;
 		
 		
 		

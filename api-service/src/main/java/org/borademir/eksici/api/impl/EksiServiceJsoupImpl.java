@@ -568,6 +568,8 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				if(pagerDivelement != null){
 					int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
 					int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
+					currentPopularPage.setMaxPage(maxPage);
+					currentPopularPage.setCurrentPage(currentPage);
 					if(currentPage < maxPage){
 						String nextPageNumber = String.valueOf(currentPage+1);
 						String href = MessageFormat.format(URLDecoder.decode(pagerDivelement.attr("data-urltemplate"),"UTF-8"),nextPageNumber);
