@@ -59,7 +59,7 @@
 		
 	</dependencies>
 	<build>
-		<finalName>eksici-api</finalName>
+		<finalName>api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
