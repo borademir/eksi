@@ -4,23 +4,23 @@ package org.borademir.eksici.api.model.base;
  */
 public class PagingModel extends EksiBaseModel {
 	
-	private int currentPage = 1;
+	private Integer currentPage ;
 	
-	private int maxPage ;
+	private Integer maxPage ;
 	
-	public int getCurrentPage() {
+	public Integer getCurrentPage() {
 		return currentPage;
 	}
 	
-	public void setCurrentPage(int currentPage) {
+	public void setCurrentPage(Integer currentPage) {
 		this.currentPage = currentPage;
 	}
 
-	public int getMaxPage() {
+	public Integer getMaxPage() {
 		return maxPage;
 	}
 
-	public void setMaxPage(int maxPage) {
+	public void setMaxPage(Integer maxPage) {
 		this.maxPage = maxPage;
 	}
 	
