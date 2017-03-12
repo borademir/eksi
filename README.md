@@ -14,11 +14,11 @@ Proje mavenize edilerek , service katmaninin onune spring mvc katmani eklendi ve
 
 Burada yapılan tüm geliştirmeler linode vps sunucumuz üzerinden de demo amaçlı paylaşılmaktadır.
 
-http://www.eksici.com/api/v1/topic/popular
-http://www.eksici.com/api/v1/topic/popular?nextPageHref=/basliklar/m/populer?p=2
+#### http://www.eksici.com/api/v1/topic/popular
+#### http://www.eksici.com/api/v1/topic/popular?nextPageHref=/basliklar/m/populer?p=2
 
-http://www.eksici.com/api/v1/topic/today
-http://www.eksici.com/api/v1/topic/today?nextPageHref=/basliklar/bugun/2
+#### http://www.eksici.com/api/v1/topic/today
+#### http://www.eksici.com/api/v1/topic/today?nextPageHref=/basliklar/bugun/2
 
 http://www.eksici.com/api/v1/topic/deserted
 http://www.eksici.com/api/v1/topic/deserted?nextPageHref=/basliklar/basiboslar?p=2
