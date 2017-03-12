@@ -19,14 +19,18 @@ class AppMvcConfig extends WebMvcConfigurationSupport {
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         for(HttpMessageConverter converter: converters) {
             if(converter instanceof MappingJackson2HttpMessageConverter) {
-                ObjectMapper mapper = ((MappingJackson2HttpMessageConverter)converter).getObjectMapper();
+            	MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+            	jacksonConverter.setPrettyPrint(true);
+                ObjectMapper mapper = jacksonConverter.getObjectMapper();
                 mapper.setSerializationInclusion(Include.NON_NULL);
             }
         }
+        
     }
     
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
+    
 }
