@@ -14,35 +14,34 @@ Proje mavenize edilerek , service katmaninin onune spring mvc katmani eklendi ve
 
 Burada yapılan tüm geliştirmeler linode vps sunucumuz üzerinden de demo amaçlı paylaşılmaktadır.
 
-#### http://www.eksici.com/api/v1/topic/popular
-#### http://www.eksici.com/api/v1/topic/popular?nextPageHref=/basliklar/m/populer?p=2
-
-#### http://www.eksici.com/api/v1/topic/today
-#### http://www.eksici.com/api/v1/topic/today?nextPageHref=/basliklar/bugun/2
-
-http://www.eksici.com/api/v1/topic/deserted
-http://www.eksici.com/api/v1/topic/deserted?nextPageHref=/basliklar/basiboslar?p=2
-
-http://www.eksici.com/api/v1/topic/videos
-http://www.eksici.com/api/v1/topic/videos?nextPageHref=/basliklar/videolar?p=2
-
-http://www.eksici.com/api/v1/topic/todayinhistory/2002
-http://www.eksici.com/api/v1/topic/todayinhistory/2002?nextPageHref=/basliklar/tarihte-bugun?_=1489314304991&year=2002&p=2
+<a href="http://www.eksici.com/api/v1/topic/popular" target="_blank">Populer Entryler</a>
+<a href="http://www.eksici.com/api/v1/topic/popular?nextPageHref=/basliklar/m/populer?p=2" target="_blank">Populer Entryler ( Sayfa 2 )</a>
 
 
-http://www.eksici.com/api/v1/channels
-http://www.eksici.com/api/v1//channels/topics?topicsHref=/basliklar/kanal/spor
+<a href="http://www.eksici.com/api/v1/topic/today" target="_blank">Günün Entryleri</a>
+<a href="http://www.eksici.com/api/v1/topic/today?nextPageHref=/basliklar/bugun/2" target="_blank">Günün Entryleri ( Sayfa 2 )</a>
 
-http://www.eksici.com/api/v1/channels/topics?topicsHref=/basliklar/kanal/ili%C5%9Fkiler
-http://www.eksici.com/api/v1/channels/topics?topicsHref=/basliklar/kanal/ili%C5%9Fkiler?p=2
+<a href="http://www.eksici.com/api/v1/topic/deserted" target="_blank">Başıboşlar</a>
+<a href="http://www.eksici.com/api/v1/topic/deserted?nextPageHref=/basliklar/basiboslar?p=2" target="_blank">Başıboşlar ( Sayfa 2 )</a>
+
+<a href="http://www.eksici.com/api/v1/topic/videos" target="_blank">Videolar</a>
+<a href="http://www.eksici.com/api/v1/topic/videos?nextPageHref=/basliklar/videolar?p=2" target="_blank">Videolar ( Sayfa 2 )</a>
+
+<a href="http://www.eksici.com/api/v1/topic/todayinhistory/2002" target="_blank">Tarihte Bugün ( 2002 )</a>
+<a href="http://www.eksici.com/api/v1/topic/todayinhistory/2002?nextPageHref=/basliklar/tarihte-bugun?_=1489314304991&year=2002&p=2" target="_blank">Tarihte Bugün ( 2002 ) ( Sayfa 2 )</a>
+
+<a href="http://www.eksici.com/api/v1/channels" target="_blank">Kanallar</a>
+<a href="http://www.eksici.com/api/v1//channels/topics?topicsHref=/basliklar/kanal/spor" target="_blank">Spor Kanalına Ait Başlıklar</a>
+<a href="http://www.eksici.com/api/v1/channels/topics?topicsHref=/basliklar/kanal/ili%C5%9Fkiler" target="_blank">İlişkiler Kanalına Ait Başlıklar</a>
+<a href="http://www.eksici.com/api/v1/channels/topics?topicsHref=/basliklar/kanal/ili%C5%9Fkiler?p=2" target="_blank">İlişkiler Kanalına Ait Başlıklar ( Sayfa 2 )</a>
+
+<a href="http://www.eksici.com/api/v1/topics/entries?topicsHref=/turkiyeden-siktir-olup-gitmek--3843083?nr=true&rf=bu%20ülkeden%20siktir%20olup%20gitmek" target="_blank">(türkiye'den siktir olup gitmek) başlığındaki entryler( Sayfa sayfa )</a>
+<a href="http://www.eksici.com/api/v1/topics/entries?topicsHref=/portakal-bicaklayarak-hollandayi-protesto-etmek--5319445?a=popular" target="_blank">portakal-bicaklayarak-hollandayi-protesto-etmek</a>
+<a href="http://www.eksici.com/api/v1/topics/entries?topicsHref=/portakal-bicaklayarak-hollandayi-protesto-etmek--5319445?a=popular&p=2" target="_blank">portakal-bicaklayarak-hollandayi-protesto-etmek ( Sayfa 2 )</a>
+
+<a href="http://www.eksici.com/api/v1/entry/66802288" target="_blank">Entry</a>
 
 
-http://www.eksici.com/api/v1/topics/entries?topicsHref=/escinsel-oldugunu-sozlukte-dile-getiren-ahlaksiz--3292470?day=2017-03-12
-
-http://www.eksici.com/api/v1/topics/entries?topicsHref=/portakal-bicaklayarak-hollandayi-protesto-etmek--5319445?a=popular
-http://www.eksici.com/api/v1/topics/entries?topicsHref=/portakal-bicaklayarak-hollandayi-protesto-etmek--5319445?a=popular&p=2
-
-http://www.eksici.com/api/v1/entry/66802288
 
 
 #### Rest WAR oluşturmak için:
