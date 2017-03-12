@@ -325,6 +325,13 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		}
 		
 		
+		Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
+		if(topicInfoElements != null && topicInfoElements.size() > 0){
+			Element topicLink = topicInfoElements.get(0);
+			returnTopic.setOriginalUrl(topicLink.attr("href"));
+			returnTopic.setTopicText(topicLink.text());
+		}
+		
 		Element entryListUlElement = doc.getElementById("entry-list");
 		Elements liElements = entryListUlElement.getElementsByTag("li");
 		
