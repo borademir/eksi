@@ -13,7 +13,7 @@ public class TopicModel extends EksiBaseModel {
 	private String relatedEntryCount;
 	private TopicTypes type ;
 	private TopicViewType viewType ;
-	private List<GenericPager<EntryModel>> entryList ;
+	private List<EntryModel> entryList ;
 	private Integer currentEntryPage ;
 	private Integer totalEntryPage ; 
 	
@@ -40,11 +40,11 @@ public class TopicModel extends EksiBaseModel {
 		this.type = type;
 	}
 
-	public List<GenericPager<EntryModel>> getEntryList() {
+	public List<EntryModel> getEntryList() {
 		return entryList;
 	}
 	
-	public void setEntryList(List<GenericPager<EntryModel>> entryList) {
+	public void setEntryList(List<EntryModel> entryList) {
 		this.entryList = entryList;
 	}
 	

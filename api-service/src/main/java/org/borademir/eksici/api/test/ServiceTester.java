@@ -2,20 +2,17 @@ package org.borademir.eksici.api.test;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.EksiApiServiceFactory;
 import org.borademir.eksici.api.IEksiService;
-import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
 import org.borademir.eksici.api.model.SearchCriteriaModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.conf.EksiciResourceUtil;
-import org.borademir.eksici.util.EksiciDateUtil;
 /**
  * @author bora.demir
  */
@@ -150,9 +147,9 @@ public class ServiceTester {
 				for(TopicModel tm : searchResults.getContentList()){
 					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
 					GenericPager<EntryModel> currentPage = null;
-					while((currentPage = eksiciService.retrieveEntries(tm,null)) != null){
-						printEntryModel(currentPage);
-					}
+//					while((currentPage = eksiciService.retrieveEntries(tm,null)) != null){
+//						printEntryModel(currentPage);
+//					}
 				}
 			}
 		}
@@ -169,7 +166,7 @@ public class ServiceTester {
 			 log.debug("\t\t" + entryModel.getEntryText());
 			 log.debug("\t\t\tEntryId:" + entryModel.getEntryId());
 			 log.debug("\t\t\tFavoriteCount:" + entryModel.getFavoriteCount());
-			 log.debug("\t\t\tEntryDate:" + EksiciDateUtil.parseEntryDate(entryModel.getEntryDate()));
+			 log.debug("\t\t\tEntryDate:" + entryModel.getEntryDate());
 			 log.debug("\t\t\tEntryLink:" + entryModel.getEntryHref());
 			 
 			 log.debug("\t\t\tAuthor:" + entryModel.getSuser().getEntryAuthor());

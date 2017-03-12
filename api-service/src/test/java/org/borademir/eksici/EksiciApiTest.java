@@ -7,7 +7,6 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
-import org.borademir.eksici.util.EksiciDateUtil;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -46,7 +45,7 @@ public class EksiciApiTest {
 			 log.debug("\t\t\tAuthor:" + entryModel.getSuser().getEntryAuthor());
 			 log.debug("\t\t\tAuthorId:" + entryModel.getSuser().getEntryAuthorId());
 			 log.debug("\t\t\tFavoriteCount:" + entryModel.getFavoriteCount());
-			 log.debug("\t\t\tEntryDate:" + EksiciDateUtil.parseEntryDate(entryModel.getEntryDate()));
+			 log.debug("\t\t\tEntryDate:" + entryModel.getEntryDate());
 			 log.debug("\t\t\tEntryLink:" + entryModel.getEntryHref());
 
 		 }

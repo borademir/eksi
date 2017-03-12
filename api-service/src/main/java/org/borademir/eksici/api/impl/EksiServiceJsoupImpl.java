@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +14,11 @@ import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
-import org.borademir.eksici.api.model.SukelaMode;
 import org.borademir.eksici.api.model.SuserModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.api.model.TopicTypes;
 import org.borademir.eksici.api.test.ServiceTester;
 import org.borademir.eksici.conf.EksiciResourceUtil;
-import org.borademir.eksici.util.EksiciDateUtil;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
@@ -259,54 +256,71 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		currentPopularPage.setContentList(topicList);
 		return currentPopularPage;
 	}
+	private String getEntryNextPageHref(String pUrl){
+		try {
+			pUrl = pUrl.replaceAll(EksiciResourceUtil.getHeaderReferrer(), "");
+			
+			boolean anyParamExists = false;
+			String[] splitted = pUrl.split("\\?");
+			if(splitted.length>1){
+				if(splitted[1] != null && splitted[1].length()>0){
+					anyParamExists = true;
+				}
+			}
+			if(!anyParamExists){
+				return pUrl + "?p=1";
+			}
+			String[] queryParams = splitted[1].split("&");
+			for(String queryParam : queryParams){
+				String[] pageParamArray = queryParam.split("=");
+				if("p".equals(pageParamArray[0])){
+					String existingPageParam = pageParamArray[0] + "=" + pageParamArray[1];
+					String newPageParam = "p=" + (Integer.valueOf(pageParamArray[1])+1);
+					return pUrl.replaceAll(existingPageParam, newPageParam);
+				}
+			}
+		} catch (Exception e) {
+		}
+		return pUrl + "&p=1";
+	}
 	
 	@Override
-	public GenericPager<EntryModel> retrieveEntries(TopicModel pTopic,SukelaMode pSukelaMod) throws IOException {
+	public TopicModel retrieveEntries(String pUrl) throws IOException {
 		
-		int targetPage = 1;
 		
-		// TODO null check
-		if(pTopic.getEntryList() != null){
-			if(pTopic.getCurrentEntryPage() == pTopic.getTotalEntryPage()){
-				return null;
-			}
-			targetPage = pTopic.getCurrentEntryPage()+1;
-		}
-
-		String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pTopic.getHref();
-		if(pSukelaMod != null && targetUrl.contains("?")){
-			targetUrl = targetUrl.split("\\?")[0];
-		}
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-		.data("p",String.valueOf(targetPage))
+		.data("p",String.valueOf(pUrl))
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
 		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.method(Method.GET);
 		
-		if(pSukelaMod != null){
-			conn.data("a", pSukelaMod.name().toLowerCase());
-		}
+//		if(pSukelaMod != null){
+//			conn.data("a", pSukelaMod.name().toLowerCase());
+//		}
 		
+		TopicModel returnTopic = new TopicModel(pUrl);
 		Response response = conn.execute();
 		
 		Document doc = response.parse();
 		
 		Element pagerDivelement = doc.select("div.pager").first();
 		if(pagerDivelement == null){
-			pTopic.setCurrentEntryPage(1);
-			pTopic.setTotalEntryPage(1);
+			returnTopic.setCurrentEntryPage(1);
+			returnTopic.setTotalEntryPage(1);
 		}else{
 			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
 			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			pTopic.setCurrentEntryPage(currentPage);
-			pTopic.setTotalEntryPage(maxPage);
+			returnTopic.setCurrentEntryPage(currentPage);
+			returnTopic.setTotalEntryPage(maxPage);
 			
 			Element nextAnchor = pagerDivelement.select("a.next").first();
 			if(nextAnchor != null){
-				pTopic.setNextPageHref(nextAnchor.attr("href"));
+				returnTopic.setNextPageHref(nextAnchor.attr("href"));
+			}else{
+				returnTopic.setNextPageHref(getEntryNextPageHref(pUrl));
 			}
 		}
 		
@@ -314,12 +328,9 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Element entryListUlElement = doc.getElementById("entry-list");
 		Elements liElements = entryListUlElement.getElementsByTag("li");
 		
-		if(pTopic.getEntryList() == null){
-			pTopic.setEntryList(new ArrayList<GenericPager<EntryModel>>());
+		if(returnTopic.getEntryList() == null){
+			returnTopic.setEntryList(new ArrayList<EntryModel>());
 		}
-		GenericPager<EntryModel> currentPageModel = new GenericPager<EntryModel>(response.url().toString());
-		currentPageModel.setCurrentPage(pTopic.getCurrentEntryPage());
-		currentPageModel.setContentList(new ArrayList<EntryModel>());
 		
 		for(Element liEl : liElements){
 			String entryId = liEl.attr("data-id");
@@ -351,13 +362,13 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			
 			
 			
+			entryModel.setEntryDate(entryDate);
 			
-			
-			try {
-				entryModel.setEntryDate(EksiciDateUtil.formateEntryDate(entryDate));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				entryModel.setEntryDate(EksiciDateUtil.formateEntryDate(entryDate));
+//			} catch (ParseException e) {
+//				e.printStackTrace();
+//			}
 			
 			Element authorElement = infoElement.getElementsByAttributeValue("class","entry-author").get(0);
 			
@@ -368,12 +379,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			entryModel.setEntryText(contentElement.text());
 			entryModel.setEntryHtml(contentElement.html());
 			
-			currentPageModel.getContentList().add(entryModel);
+			returnTopic.getEntryList().add(entryModel);
 			
 		}
 		
-		pTopic.getEntryList().add(currentPageModel);
-		return currentPageModel;
+		return returnTopic;
 	
 	}
 	

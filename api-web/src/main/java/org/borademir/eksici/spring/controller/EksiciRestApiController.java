@@ -72,7 +72,7 @@ public class EksiciRestApiController {
 	
 	@GetMapping(VERSION_ONE + "/topic/popular")
 	public ResponseEntity<GenericPager<TopicModel>> popularTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
-		pNextHref = parseNextToken(pNextHref);
+		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("Popular Topics:");
@@ -90,7 +90,7 @@ public class EksiciRestApiController {
 	
 	@GetMapping(VERSION_ONE + "/topic/today")
 	public ResponseEntity<GenericPager<TopicModel>> todaysTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
-		pNextHref = parseNextToken(pNextHref);
+		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("Todays Topics:");
@@ -108,7 +108,7 @@ public class EksiciRestApiController {
 
 	@GetMapping(VERSION_ONE + "/topic/deserted")
 	public ResponseEntity<GenericPager<TopicModel>> desertedTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
-		pNextHref = parseNextToken(pNextHref);
+		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("Deserted Topics:");
@@ -125,7 +125,7 @@ public class EksiciRestApiController {
 
 	@GetMapping(VERSION_ONE + "/topic/videos")
 	public ResponseEntity<GenericPager<TopicModel>> videoTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
-		pNextHref = parseNextToken(pNextHref);
+		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("Deserted Topics:");
@@ -143,7 +143,7 @@ public class EksiciRestApiController {
 
 	@GetMapping(VERSION_ONE + "/topic/todayinhistory/{year}")
 	public ResponseEntity<GenericPager<TopicModel>> todayInHistory(@PathVariable("year") int pYear,@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
-		pNextHref = parseNextToken(pNextHref);
+		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("Deserted Topics:");
@@ -156,8 +156,6 @@ public class EksiciRestApiController {
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
-	
-	
 	}
 
 
@@ -180,8 +178,6 @@ public class EksiciRestApiController {
 	
 	@GetMapping(VERSION_ONE + "/channels/topics") 
 	public ResponseEntity<GenericPager<TopicModel>> channelTopics(@RequestParam(value="topicsHref", required=true) String pNextHref) throws EksiApiException {
-		
-
 
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -193,16 +189,35 @@ public class EksiciRestApiController {
 			}
 			log.debug("Deserted Topics:");
 			String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pNextHref;
-			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(targetUrl);
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveChannelTopics(targetUrl);
 			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
-	
-	
-	
 	}
 
+	
+	@GetMapping(VERSION_ONE + "/topics/entries") 
+	public ResponseEntity<TopicModel> topicEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
+		topicsHref = parseNextToken(topicsHref,"topicsHref");
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("Deserted Topics:");
+			String targetUrl = EksiciResourceUtil.getHeaderReferrer() + topicsHref;
+			TopicModel retTopic = eksiciService.retrieveEntries(targetUrl);
+			return new ResponseEntity<TopicModel>(retTopic, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new EksiApiException(e.getMessage());
+		} 
+	}
+	
+	
+	@GetMapping(VERSION_ONE + "/entry/{entryId}")
+	public ResponseEntity<TopicModel> entry(@PathVariable("entryId") long pEntryId) throws EksiApiException {
+		return topicEntries("/entry/" +pEntryId );
+	}
+	
+	
 	@ExceptionHandler(EksiApiException.class)
 	public ResponseEntity<EksiciRestErrorResponse> exceptionHandler(Exception ex) {
 		EksiciRestErrorResponse error = new EksiciRestErrorResponse();
@@ -211,9 +226,9 @@ public class EksiciRestApiController {
 		return new ResponseEntity<EksiciRestErrorResponse>(error, HttpStatus.OK);
 	}
 	
-	private String parseNextToken(String pNextHref) {
-		if(httpServletRequest.getQueryString().contains("nextPageHref")){
-			return httpServletRequest.getQueryString().replaceAll("nextPageHref=", "");
+	private String parseNextToken(String pNextHref,String pParamName) {
+		if(httpServletRequest.getQueryString() != null && httpServletRequest.getQueryString().contains(pParamName)){
+			return httpServletRequest.getQueryString().replaceAll(pParamName + "=", "");
 		}
 		return pNextHref;
 	}

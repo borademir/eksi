@@ -1,7 +1,5 @@
 package org.borademir.eksici.api.model;
 
-import java.util.Date;
-
 import org.borademir.eksici.api.model.base.EksiBaseModel;
 /**
  * @author bora.demir
@@ -14,9 +12,9 @@ public class EntryModel extends EksiBaseModel {
 	
 	private String dataIsFavorite;
 	
-	private int favoriteCount;
+	private Integer favoriteCount;
 	
-	private int commentCount;
+	private Integer commentCount;
 	
 	private String entryText ;
 	
@@ -24,7 +22,7 @@ public class EntryModel extends EksiBaseModel {
 	
 	private String entryHref;
 	
-	private Date entryDate; 
+	private String entryDate; 
 
 	public EntryModel(String href) {
 		super(href);
@@ -46,19 +44,19 @@ public class EntryModel extends EksiBaseModel {
 		this.dataIsFavorite = dataIsFavorite;
 	}
 
-	public int getFavoriteCount() {
+	public Integer getFavoriteCount() {
 		return favoriteCount;
 	}
 
-	public void setFavoriteCount(int favoriteCount) {
+	public void setFavoriteCount(Integer favoriteCount) {
 		this.favoriteCount = favoriteCount;
 	}
 
-	public int getCommentCount() {
+	public Integer getCommentCount() {
 		return commentCount;
 	}
 
-	public void setCommentCount(int commentCount) {
+	public void setCommentCount(Integer commentCount) {
 		this.commentCount = commentCount;
 	}
 
@@ -94,11 +92,11 @@ public class EntryModel extends EksiBaseModel {
 		this.entryHref = entryHref;
 	}
 
-	public Date getEntryDate() {
+	public String getEntryDate() {
 		return entryDate;
 	}
 
-	public void setEntryDate(Date entryDate) {
+	public void setEntryDate(String entryDate) {
 		this.entryDate = entryDate;
 	}
 	
