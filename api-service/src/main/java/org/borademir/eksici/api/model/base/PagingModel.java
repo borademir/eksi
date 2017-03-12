@@ -4,7 +4,7 @@ package org.borademir.eksici.api.model.base;
  */
 public class PagingModel extends EksiBaseModel {
 	
-	private Integer currentPage ;
+	private Integer currentPage = 1;
 	
 	private Integer maxPage ;
 	
