@@ -26,6 +26,10 @@ public class EntryModel extends EksiBaseModel {
 	
 	private Date entryDate; 
 
+	public EntryModel(String href) {
+		super(href);
+	}
+	
 	public String getEntryId() {
 		return entryId;
 	}

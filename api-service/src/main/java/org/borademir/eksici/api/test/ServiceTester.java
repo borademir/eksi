@@ -14,6 +14,7 @@ import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
 import org.borademir.eksici.api.model.SearchCriteriaModel;
 import org.borademir.eksici.api.model.TopicModel;
+import org.borademir.eksici.conf.EksiciResourceUtil;
 import org.borademir.eksici.util.EksiciDateUtil;
 /**
  * @author bora.demir
@@ -31,10 +32,10 @@ public class ServiceTester {
 		
 		MainPageModel mainPage = new MainPageModel();
 		
-		boolean processPopulars = true;
+		boolean processPopulars = false;
 		boolean processTodays = false;
 		boolean processDeserted = false;
-		boolean processTodayInHistory = false;
+		boolean processTodayInHistory = true;
 		boolean processChannels = false;
 		boolean processVideos = false;
 		
@@ -43,15 +44,17 @@ public class ServiceTester {
 		
 		
 		if(processPopulars){
-			GenericPager<TopicModel> popularTopicCurrentPage = null;
 			log.debug("Popular Topics:");
-			while((popularTopicCurrentPage = eksiciService.retrievePopularTopics(mainPage)) != null){
+			String targetUrl = EksiciResourceUtil.getPopularTopicsUrl();
+			for(;;){
+				GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrievePopularTopics(targetUrl);
 				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
 					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-//				GenericPager<EntryModel> currentPage = null;
-//				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
-//					printEntryModel(currentPage);
-//				}
+				}
+				if(popularTopicCurrentPage.getNextPageHref() != null){
+					targetUrl = EksiciResourceUtil.getHeaderReferrer() +  popularTopicCurrentPage.getNextPageHref();
+				}else{
+					break;
 				}
 			}
 		}
@@ -59,14 +62,16 @@ public class ServiceTester {
 
 		if(processTodays){
 			log.debug("Todays Topics:");
-			GenericPager<TopicModel> todaysTopicCurrentPage = null;
-			while((todaysTopicCurrentPage = eksiciService.retrieveTodaysTopics(mainPage)) != null){
-				for(TopicModel tm : todaysTopicCurrentPage.getContentList()){
+			String targetUrl = EksiciResourceUtil.getPopularTopicsUrl();
+			for(;;){
+				GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveTodaysTopics(targetUrl);
+				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
 					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-//				GenericPager<EntryModel> currentPage = null;
-//				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
-//					printEntryModel(currentPage);
-//				}
+				}
+				if(popularTopicCurrentPage.getNextPageHref() != null){
+					targetUrl = EksiciResourceUtil.getHeaderReferrer() +  popularTopicCurrentPage.getNextPageHref();
+				}else{
+					break;
 				}
 			}
 		}
@@ -74,62 +79,63 @@ public class ServiceTester {
 		
 		if(processDeserted){
 			log.debug("Deserted Topics:");
-			GenericPager<TopicModel> desertedTopicCurrentPage = null;
-			while((desertedTopicCurrentPage = eksiciService.retrieveDesertedTopics(mainPage)) != null){
-				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
-//				GenericPager<EntryModel> currentPage = null;
-//				while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
-//					printEntryModel(currentPage);
-//				}
-//				break;
+			String targetUrl = EksiciResourceUtil.getPopularTopicsUrl();
+			for(;;){
+				GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveDesertedTopics(targetUrl);
+				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
+				}
+				if(popularTopicCurrentPage.getNextPageHref() != null){
+					targetUrl = EksiciResourceUtil.getHeaderReferrer() +  popularTopicCurrentPage.getNextPageHref();
+				}else{
+					break;
 				}
 			}
 		}
 		
 		if(processTodayInHistory){
 			log.debug("Today In History Topics:");
-			GenericPager<TopicModel> desertedTopicCurrentPage = null;
-			while((desertedTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(mainPage,1999)) != null){
-				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
+			String targetUrl = EksiciResourceUtil.getTodayInHistoryTopicsUrl(System.currentTimeMillis(), 2002);
+			for(;;){
+				GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(targetUrl);
+				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
 					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-//					GenericPager<EntryModel> currentPage = null;
-//					while((currentPage = eksiciService.retriveEntries(tm,null)) != null){
-//						printEntryModel(currentPage);
-//					}
-//					break;
-					}
-			}
-		}
-		
-		if(processChannels){
-			log.debug("Channels:");
-			List<ChannelModel> channels = eksiciService.retrieveChannels();
-			for(ChannelModel channel : channels){
-				log.debug(channel.getName() + " (" + channel.getTitle() + ") -- " + channel.getHref() );
-				GenericPager<TopicModel> channelTopics = null;
-				while((channelTopics = eksiciService.retrieveChannelTopics(channel)) != null){
-//				for(TopicModel tm : channelTopics.getContentList()){
-//					log.debug(tm.getTopicText() + "(" + tm.getTopicPopularEntryCount() + ") - " + tm.getHref());
-//				}
+				}
+				if(popularTopicCurrentPage.getNextPageHref() != null){
+					targetUrl = EksiciResourceUtil.getHeaderReferrer() +  popularTopicCurrentPage.getNextPageHref();
+				}else{
+					break;
 				}
 			}
 		}
+		
+//		if(processChannels){
+//			log.debug("Channels:");
+//			List<ChannelModel> channels = eksiciService.retrieveChannels();
+//			for(ChannelModel channel : channels){
+//				log.debug(channel.getName() + " (" + channel.getTitle() + ") -- " + channel.getHref() );
+//				GenericPager<TopicModel> channelTopics = null;
+//				while((channelTopics = eksiciService.retrieveChannelTopics(channel)) != null){
+//				}
+//			}
+//		}
 		
 		
 		if(processVideos){
-			log.debug("Video Topics:");
-			GenericPager<TopicModel> videoTopicCurrentPage = null;
-			while((videoTopicCurrentPage = eksiciService.retrieveVideos(mainPage)) != null){
-				for(TopicModel tm : videoTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
-					GenericPager<EntryModel> currentPage = null;
-					while((currentPage = eksiciService.retrieveEntries(tm,null)) != null){
-						printEntryModel(currentPage);
-					}
-//					break;
+			log.debug("Videos:");
+			String targetUrl = EksiciResourceUtil.getVideosUrl(System.currentTimeMillis());
+			for(;;){
+				GenericPager<TopicModel> currentPage = eksiciService.retrieveVideos(targetUrl);
+				for(TopicModel tm : currentPage.getContentList()){
+					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
+				}
+				if(currentPage.getNextPageHref() != null){
+					targetUrl = EksiciResourceUtil.getHeaderReferrer() +  currentPage.getNextPageHref();
+				}else{
+					break;
 				}
 			}
+		
 		}
 		
 		if(processSearch){

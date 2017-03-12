@@ -3,7 +3,6 @@ package org.borademir.eksici.api.impl;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -40,54 +39,6 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	static Logger log = Logger.getLogger(EksiServiceJsoupImpl.class);
 
 	@Override
-	public GenericPager<TopicModel> retrievePopularTopics(MainPageModel mainPage) throws IOException {
-		
-		boolean hasNext = true;
-		String targetUrl = EksiciResourceUtil.getPopularTopicsUrl();
-		if(mainPage.getPopularTopics() != null && mainPage.getPopularTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getPopularTopics().get(mainPage.getPopularTopics().size()-1);
-			if(lastPageOfPopularTopics.getNextPageHref() == null){
-				hasNext = false;
-			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
-			}
-		}
-		if(!hasNext){
-			return null;
-		}
-		
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
-		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
-		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
-		.header("Accept-Encoding", "gzip, deflate, sdch, br")
-		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
-		.header("User-Agent",EksiciResourceUtil.getUserAgent())
-		.method(Method.GET);
-		
-		
-		Response response = conn.execute();
-		log.debug("Loaded : " + response.url());
-		Document doc = response.parse();
-		
-		/**
-		 * parse next page link if exists
-		 */
-		Element nextPageElement = doc.select("div.full-index-continue-link-container > a").first();
-		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
-		
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.POPULAR,"topic-list partial");
-		currentPopularPage.setContentList(topicList);
-		
-		if(mainPage.getPopularTopics() == null){
-			mainPage.setPopularTopics(new ArrayList<GenericPager<TopicModel>>());
-		}
-		mainPage.getPopularTopics().add(currentPopularPage);
-		return currentPopularPage;
-	}
-	
-	@Override
 	public GenericPager<TopicModel> search(MainPageModel mainPage) throws EksiApiException, IOException {
 		
 		if(mainPage.getSearchCriteria() == null){
@@ -111,7 +62,6 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			return null;
 		}
 		
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
 		
 		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
@@ -157,9 +107,9 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
-		/**
-		 * parse next page link if exists
-		 */
+
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>(response.url().toString());
+		
 		Element nextPageElement = doc.select("div.full-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
@@ -174,24 +124,37 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 	
 	@Override
-	public GenericPager<TopicModel> retrieveTodaysTopics(MainPageModel mainPage) throws IOException {
-
-		boolean hasNext = true;
-		String targetUrl = EksiciResourceUtil.getTodaysTopicsUrl(System.currentTimeMillis());
-		if(mainPage.getTodaysTopics() != null && mainPage.getTodaysTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getTodaysTopics().get(mainPage.getTodaysTopics().size()-1);
-			if(lastPageOfPopularTopics.getNextPageHref() == null){
-				hasNext = false;
-			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
-			}
-		}
-		if(!hasNext){
-			return null;
-		}
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
+	public GenericPager<TopicModel> retrievePopularTopics(String pUrl) throws IOException {
 		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		
+		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>(response.url().toString());
+		Element nextPageElement = doc.select("div.full-index-continue-link-container > a").first();
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.POPULAR,"topic-list partial");
+		currentPopularPage.setContentList(topicList);
+		
+		return currentPopularPage;
+	}
+	
+	@Override
+	public GenericPager<TopicModel> retrieveTodaysTopics(String pUrl) throws IOException {
+
+		
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -202,42 +165,23 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		Response response = conn.execute();
 		
+		GenericPager<TopicModel> currentPage = new GenericPager<TopicModel>(response.url().toString());
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
-		/**
-		 * parse next page link if exists
-		 */
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
-		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPage, doc, nextPageElement);
 		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS,"topic-list partial");
-		currentPopularPage.setContentList(topicList);
-		if(mainPage.getTodaysTopics() == null){
-			mainPage.setTodaysTopics(new ArrayList<GenericPager<TopicModel>>());
-		}
-		mainPage.getTodaysTopics().add(currentPopularPage);
-		return currentPopularPage;
+		currentPage.setContentList(topicList);
+		
+		return currentPage;
 	}
 
 	@Override
-	public GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel mainPage) throws IOException {
+	public GenericPager<TopicModel> retrieveDesertedTopics(String pUrl) throws IOException {
 
-		boolean hasNext = true;
-		String targetUrl = EksiciResourceUtil.getDesertedTopicsUrl(System.currentTimeMillis());
-		if(mainPage.getDesertedTopics() != null && mainPage.getDesertedTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getDesertedTopics().get(mainPage.getDesertedTopics().size()-1);
-			if(lastPageOfPopularTopics.getNextPageHref() == null){
-				hasNext = false;
-			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
-			}
-		}
-		if(!hasNext){
-			return null;
-		}
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
 		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -250,45 +194,24 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		log.debug("Loaded : " + response.url());
 		
 		Document doc = response.parse();
+		GenericPager<TopicModel> currentPage = new GenericPager<TopicModel>(response.url().toString());
 		
-//		System.out.println(doc.html());
-		
-		/**
-		 * parse next page link if exists
-		 */
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
-		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
+		JsoupHtmlParser.parseNextPageForTopicPage(currentPage, doc, nextPageElement);
 		
 		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED,"topic-list partial");
 		
-		currentPopularPage.setContentList(topicList);
-		if(mainPage.getDesertedTopics() == null){
-			mainPage.setDesertedTopics(new ArrayList<GenericPager<TopicModel>>());
-		}
-		mainPage.getDesertedTopics().add(currentPopularPage);
-		return currentPopularPage;
+		currentPage.setContentList(topicList);
+		
+		return currentPage;
 	}
 	
 	
 	@Override
-	public GenericPager<TopicModel> retrieveVideos(MainPageModel pMainPage) throws IOException {
+	public GenericPager<TopicModel> retrieveVideos(String pUrl) throws IOException {
 
-		boolean hasNext = true;
-		String targetUrl = EksiciResourceUtil.getVideosUrl(System.currentTimeMillis());
-		if(pMainPage.getVideoTopics() != null && pMainPage.getVideoTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = pMainPage.getVideoTopics().get(pMainPage.getVideoTopics().size()-1);
-			if(lastPageOfPopularTopics.getNextPageHref() == null){
-				hasNext = false;
-			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
-			}
-		}
-		if(!hasNext){
-			return null;
-		}
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
 		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -302,48 +225,26 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		Document doc = response.parse();
 		
-		/**
-		 * parse next page link if exists
-		 */
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>(response.url().toString());
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.DESERTED,"topic-list partial");
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.VIDEOS,"topic-list partial");
 		
 		currentPopularPage.setContentList(topicList);
-		if(pMainPage.getVideoTopics() == null){
-			pMainPage.setVideoTopics(new ArrayList<GenericPager<TopicModel>>());
-		}
-		pMainPage.getVideoTopics().add(currentPopularPage);
 		return currentPopularPage;
 	}
 	
 	@Override
-	public GenericPager<TopicModel> retrieveTodayInHistoryTopics(MainPageModel mainPage, int pYear) throws IOException {
+	public GenericPager<TopicModel> retrieveTodayInHistoryTopics(String pUrl) throws IOException {
 
-		boolean hasNext = true;
-		String targetUrl = EksiciResourceUtil.getTodayInHistoryTopicsUrl(System.currentTimeMillis());
-		if(mainPage.getTodayInHistoryTopics() != null && mainPage.getTodayInHistoryTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = mainPage.getTodayInHistoryTopics().get(mainPage.getTodayInHistoryTopics().size()-1);
-			if(lastPageOfPopularTopics.getNextPageHref() == null){
-				hasNext = false;
-			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref();
-			}
-		}
-		if(!hasNext){
-			return null;
-		}
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
-		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
 		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
 		.header("X-Requested-With","XMLHttpRequest")
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
-		.data("year",String.valueOf(pYear))
 		.method(Method.GET);
 		
 		Response response = conn.execute();
@@ -351,17 +252,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
-		/**
-		 * parse next page link if exists
-		 */
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>(response.url().toString());
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
-		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAYS,"topic-list partial");
+		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.TODAY_IN_HISTORY,"topic-list partial");
 		currentPopularPage.setContentList(topicList);
-		if(mainPage.getTodayInHistoryTopics() == null){
-			mainPage.setTodayInHistoryTopics(new ArrayList<GenericPager<TopicModel>>());
-		}
-		mainPage.getTodayInHistoryTopics().add(currentPopularPage);
 		return currentPopularPage;
 	}
 	
@@ -370,11 +265,12 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		int targetPage = 1;
 		
+		// TODO null check
 		if(pTopic.getEntryList() != null){
-			if(pTopic.getCurrentPage() == pTopic.getTotalPage()){
+			if(pTopic.getCurrentEntryPage() == pTopic.getTotalEntryPage()){
 				return null;
 			}
-			targetPage = pTopic.getCurrentPage()+1;
+			targetPage = pTopic.getCurrentEntryPage()+1;
 		}
 
 		String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pTopic.getHref();
@@ -400,13 +296,13 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		Element pagerDivelement = doc.select("div.pager").first();
 		if(pagerDivelement == null){
-			pTopic.setCurrentPage(1);
-			pTopic.setTotalPage(1);
+			pTopic.setCurrentEntryPage(1);
+			pTopic.setTotalEntryPage(1);
 		}else{
 			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
 			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			pTopic.setCurrentPage(currentPage);
-			pTopic.setTotalPage(maxPage);
+			pTopic.setCurrentEntryPage(currentPage);
+			pTopic.setTotalEntryPage(maxPage);
 			
 			Element nextAnchor = pagerDivelement.select("a.next").first();
 			if(nextAnchor != null){
@@ -421,8 +317,8 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		if(pTopic.getEntryList() == null){
 			pTopic.setEntryList(new ArrayList<GenericPager<EntryModel>>());
 		}
-		GenericPager<EntryModel> currentPageModel = new GenericPager<EntryModel>();
-		currentPageModel.setCurrentPage(pTopic.getCurrentPage());
+		GenericPager<EntryModel> currentPageModel = new GenericPager<EntryModel>(response.url().toString());
+		currentPageModel.setCurrentPage(pTopic.getCurrentEntryPage());
 		currentPageModel.setContentList(new ArrayList<EntryModel>());
 		
 		for(Element liEl : liElements){
@@ -437,7 +333,12 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				log.debug(liEl.attr("data-seyler-slug"));
 			}
 
-			EntryModel entryModel = new EntryModel();
+			Element infoElement = liEl.getElementsByAttributeValue("class", "info").get(0);
+			Element entryDateElement = infoElement.getElementsByAttributeValue("class","entry-date permalink").get(0);
+			String entryDate = entryDateElement.text();
+			String entryHref = entryDateElement.attr("href");
+			
+			EntryModel entryModel = new EntryModel(entryHref);
 			entryModel.setCommentCount(commentCount);
 			entryModel.setDataIsFavorite(dataIsFavorite);
 			SuserModel suser = new SuserModel();
@@ -447,14 +348,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			entryModel.setEntryId(entryId);
 			entryModel.setFavoriteCount(favoriteCount);
 			
-			Element infoElement = liEl.getElementsByAttributeValue("class", "info").get(0);
 			
-			Element entryDateElement = infoElement.getElementsByAttributeValue("class","entry-date permalink").get(0);
 			
-			String entryHref = entryDateElement.attr("href");
-			entryModel.setEntryHref(entryHref);
 			
-			String entryDate = entryDateElement.text();
+			
+			
 			try {
 				entryModel.setEntryDate(EksiciDateUtil.formateEntryDate(entryDate));
 			} catch (ParseException e) {
@@ -480,23 +378,9 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 	
 	@Override
-	public GenericPager<TopicModel> retrieveChannelTopics(ChannelModel pChannel)throws IOException {
-		boolean hasNext = true;
-		String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pChannel.getHref();
-		if(pChannel.getTopics() != null && pChannel.getTopics().size() > 0){
-			GenericPager<TopicModel> lastPageOfPopularTopics = pChannel.getTopics().get(pChannel.getTopics().size()-1);
-			if(lastPageOfPopularTopics.getNextPageHref() == null){
-				hasNext = false;
-			}else{
-				targetUrl = EksiciResourceUtil.getHeaderReferrer() + lastPageOfPopularTopics.getNextPageHref().replaceAll(pChannel.getName().replaceAll("#", ""), URLEncoder.encode(pChannel.getName().replaceAll("#", ""), "UTF-8"));
-			}
-		}
-		if(!hasNext){
-			return null;
-		}
-		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>();
+	public GenericPager<TopicModel> retrieveChannelTopics(String pUrl)throws IOException {
 		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -505,25 +389,20 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.method(Method.GET);
 		
-		log.debug("Loading : " + targetUrl);
+		log.debug("Loading : " + pUrl);
 		Response response = conn.execute();
 		log.debug("Loaded  : " + response.url());
 		
 		Document doc = response.parse();
 		
-		/**
-		 * parse next page link if exists
-		 */
+		GenericPager<TopicModel> currentPopularPage = new GenericPager<TopicModel>(response.url().toString());
+		
 		Element nextPageElement = doc.select("div.quick-index-continue-link-container > a").first();
 		JsoupHtmlParser.parseNextPageForTopicPage(currentPopularPage, doc, nextPageElement);
 		
 		List<TopicModel> topicList = JsoupHtmlParser.parseTopicList(doc,TopicTypes.CHANNEL,"topic-list partial");
 		
 		currentPopularPage.setContentList(topicList);
-		if(pChannel.getTopics() == null){
-			pChannel.setTopics(new ArrayList<GenericPager<TopicModel>>());
-		}
-		pChannel.getTopics().add(currentPopularPage);
 		return currentPopularPage;
 	
 	}
@@ -545,13 +424,12 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
-//		System.out.println(doc.html());
 		List<ChannelModel> retList = new ArrayList<ChannelModel>();
 		Elements anchors = doc.select("a.index-link");
 		for(Element anchor : anchors){
 			if(anchor.text().startsWith("#")){
-				ChannelModel channel = new ChannelModel();
-				channel.setHref(anchor.attr("href"));
+				ChannelModel channel = new ChannelModel(anchor.attr("href"));
+				channel.setTopicsUrl(anchor.attr("href"));
 				channel.setTitle(anchor.attr("title"));
 				channel.setName(anchor.text());
 				retList.add(channel );
@@ -597,14 +475,13 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				String href = topicElement.attr("href");
 				String topicText = ((TextNode)topicElement.childNode(0)).text();
 				String topicPopularEntryCount = "0";
-				TopicModel tm = new TopicModel();
+				TopicModel tm = new TopicModel(href);
 				try {
 					topicPopularEntryCount = ((Element)topicElement.childNode(1)).text();
 					tm.setRelatedEntryCount(topicPopularEntryCount == null ? "0" : topicPopularEntryCount);
 				} catch (Exception e) {
-					tm.setRelatedEntryCount("0");
+					tm.setRelatedEntryCount(null);
 				}
-				tm.setHref(href);
 				if(href.contains("?")){
 					tm.setOriginalUrl(href.split("\\?")[0]);
 				}else{

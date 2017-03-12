@@ -1,8 +1,7 @@
 package org.borademir.eksici.api.model;
 
-import org.borademir.eksici.api.model.base.EksiBaseModel;
 
-public class SearchCriteriaModel extends EksiBaseModel {
+public class SearchCriteriaModel {
 
 	private String keywords ;
 	

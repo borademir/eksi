@@ -14,21 +14,21 @@ import org.borademir.eksici.api.model.TopicModel;
  */
 public interface IEksiService extends IEksiBaseService{
 	
-	GenericPager<TopicModel> retrievePopularTopics(MainPageModel pMainPage) throws IOException;
+	GenericPager<TopicModel> retrievePopularTopics(String pUrl) throws IOException;
 	
-	GenericPager<TopicModel> retrieveTodaysTopics(MainPageModel pMainPage) throws IOException;
+	GenericPager<TopicModel> retrieveTodaysTopics(String pUrl) throws IOException;
 	
-	GenericPager<TopicModel> retrieveDesertedTopics(MainPageModel pMainPage) throws IOException;
+	GenericPager<TopicModel> retrieveDesertedTopics(String pUrl) throws IOException;
 	
-	GenericPager<TopicModel> retrieveChannelTopics(ChannelModel pChannel) throws IOException;
+	GenericPager<TopicModel> retrieveChannelTopics(String pUrl) throws IOException;
 	
-	GenericPager<TopicModel> retrieveTodayInHistoryTopics(MainPageModel mainPage, int pYear) throws IOException;
+	GenericPager<TopicModel> retrieveTodayInHistoryTopics(String pUrl) throws IOException;
 	
 	GenericPager<EntryModel> retrieveEntries(TopicModel pTopic,SukelaMode pSukelaMod)  throws IOException;
 	
 	List<ChannelModel> retrieveChannels() throws IOException;
 
-	GenericPager<TopicModel> retrieveVideos(MainPageModel pMainPage)	throws IOException;
+	GenericPager<TopicModel> retrieveVideos(String pUrl)	throws IOException;
 
 	GenericPager<TopicModel> search(MainPageModel pMainPage) throws EksiApiException, IOException;
 

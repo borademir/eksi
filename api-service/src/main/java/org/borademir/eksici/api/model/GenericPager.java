@@ -13,6 +13,10 @@ public class GenericPager<T> extends PagingModel{
 
 	private List<T> contentList ;
 	
+	public GenericPager(String href) {
+		super(href);
+	}
+	
 	public List<T> getContentList() {
 		return contentList;
 	}

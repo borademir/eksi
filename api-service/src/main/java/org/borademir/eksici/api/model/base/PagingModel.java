@@ -4,6 +4,10 @@ package org.borademir.eksici.api.model.base;
  */
 public class PagingModel extends EksiBaseModel {
 	
+	public PagingModel(String href) {
+		super(href);
+	}
+
 	private Integer currentPage = 1;
 	
 	private Integer maxPage ;

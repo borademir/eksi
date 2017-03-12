@@ -71,8 +71,8 @@ public class EksiciResourceUtil {
 		return PROPERTIES.getProperty("url.videos") + pTimeInMs;
 	}
 	
-	public static String getTodayInHistoryTopicsUrl(long pTimeInMs){
-		return PROPERTIES.getProperty("url.todayinhistory") + pTimeInMs;
+	public static String getTodayInHistoryTopicsUrl(long pTimeInMs, int pYear){
+		return PROPERTIES.getProperty("url.todayinhistory") + pTimeInMs + "&year=" + pYear;
 	}
 	
 	public static String getUserAgent(){

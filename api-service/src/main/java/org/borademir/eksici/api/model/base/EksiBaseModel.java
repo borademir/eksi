@@ -4,13 +4,15 @@ package org.borademir.eksici.api.model.base;
  */
 public class EksiBaseModel {
 	
-	public EksiBaseModel(){
+	private String href;
+	private String originalUrl ;
+	private long creationDate;
+	private String nextPageHref ;
+	
+	public EksiBaseModel(String href){
+		this.href= href;
 		this.creationDate = System.currentTimeMillis();
 	}
-	
-	private long creationDate;
-	
-	private String nextPageHref ;
 	
 	public long getCreationDate() {
 		return creationDate;
@@ -22,6 +24,17 @@ public class EksiBaseModel {
 	
 	public void setNextPageHref(String nextPageHref) {
 		this.nextPageHref = nextPageHref;
+	}
+	
+	public String getHref() {
+		return href;
+	}
+	
+	public String getOriginalUrl() {
+		return originalUrl;
+	}
+	public void setOriginalUrl(String originalUrl) {
+		this.originalUrl = originalUrl;
 	}
 	
 

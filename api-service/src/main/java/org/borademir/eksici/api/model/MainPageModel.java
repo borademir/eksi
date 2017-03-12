@@ -1,12 +1,10 @@
 package org.borademir.eksici.api.model;
 
 import java.util.List;
-
-import org.borademir.eksici.api.model.base.EksiBaseModel;
 /**
  * @author bora.demir
  */
-public class MainPageModel extends EksiBaseModel{
+public class MainPageModel {
 
 	private List<GenericPager<TopicModel>> popularTopics ;
 	

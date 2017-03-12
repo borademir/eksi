@@ -8,23 +8,19 @@ import org.borademir.eksici.api.model.base.EksiBaseModel;
  * @author bora.demir
  */
 public class TopicModel extends EksiBaseModel {
-	
-	private String href;
-	private String originalUrl ;
+
 	private String topicText;
 	private String relatedEntryCount;
 	private TopicTypes type ;
 	private TopicViewType viewType ;
 	private List<GenericPager<EntryModel>> entryList ;
-	private int currentPage ;
-	private int totalPage ; 
+	private Integer currentEntryPage ;
+	private Integer totalEntryPage ; 
 	
-	public String getHref() {
-		return href;
+	public TopicModel(String href) {
+		super(href);
 	}
-	public void setHref(String href) {
-		this.href = href;
-	}
+	
 	public String getTopicText() {
 		return topicText;
 	}
@@ -59,26 +55,17 @@ public class TopicModel extends EksiBaseModel {
 		this.viewType = viewType;
 	}
 
-	public int getTotalPage() {
-		return totalPage;
+	public Integer getTotalEntryPage() {
+		return totalEntryPage;
 	}
-
-	public void setTotalPage(int totalPage) {
-		this.totalPage = totalPage;
+	public void setTotalEntryPage(Integer totalEntryPage) {
+		this.totalEntryPage = totalEntryPage;
 	}
-
-	public int getCurrentPage() {
-		return currentPage;
+	public Integer getCurrentEntryPage() {
+		return currentEntryPage;
 	}
-
-	public void setCurrentPage(int currentPage) {
-		this.currentPage = currentPage;
-	}
-	public String getOriginalUrl() {
-		return originalUrl;
-	}
-	public void setOriginalUrl(String originalUrl) {
-		this.originalUrl = originalUrl;
+	public void setCurrentEntryPage(Integer currentEntryPage) {
+		this.currentEntryPage = currentEntryPage;
 	}
 
 }

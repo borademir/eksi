@@ -1,8 +1,9 @@
 package org.borademir.eksici.spring.controller;
 
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
@@ -13,6 +14,8 @@ import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
 import org.borademir.eksici.api.model.SearchCriteriaModel;
 import org.borademir.eksici.api.model.TopicModel;
+import org.borademir.eksici.conf.EksiciResourceUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
@@ -32,6 +35,8 @@ public class EksiciRestApiController {
 	private static final String VERSION_ONE = "/v1";
 	
 	static final Logger log = Logger.getLogger(EksiciRestApiController.class);
+	
+	private @Autowired HttpServletRequest httpServletRequest;
 	
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView sayHello(ModelMap model) {
@@ -66,19 +71,17 @@ public class EksiciRestApiController {
 	
 	
 	@GetMapping(VERSION_ONE + "/topic/popular")
-	public ResponseEntity<List<GenericPager<TopicModel>>> popularTopics() throws EksiApiException {
-		
+	public ResponseEntity<GenericPager<TopicModel>> popularTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+		pNextHref = parseNextToken(pNextHref);
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
-		MainPageModel mainPage = new MainPageModel();
 		try {
-			GenericPager<TopicModel> popularTopicCurrentPage = null;
 			log.debug("Popular Topics:");
-			while((popularTopicCurrentPage = eksiciService.retrievePopularTopics(mainPage)) != null){
-				for(TopicModel tm : popularTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-				}
+			String targetUrl = EksiciResourceUtil.getPopularTopicsUrl();
+			if(pNextHref != null){
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() +  pNextHref;
 			}
-			return new ResponseEntity<List<GenericPager<TopicModel>>>(mainPage.getPopularTopics(), HttpStatus.OK);
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrievePopularTopics(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
@@ -86,78 +89,75 @@ public class EksiciRestApiController {
 	
 	
 	@GetMapping(VERSION_ONE + "/topic/today")
-	public ResponseEntity<List<GenericPager<TopicModel>>> todaysTopics() throws EksiApiException {
-		
+	public ResponseEntity<GenericPager<TopicModel>> todaysTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+		pNextHref = parseNextToken(pNextHref);
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
-		MainPageModel mainPage = new MainPageModel();
 		try {
 			log.debug("Todays Topics:");
-			GenericPager<TopicModel> todaysTopicCurrentPage = null;
-			while((todaysTopicCurrentPage = eksiciService.retrieveTodaysTopics(mainPage)) != null){
-				for(TopicModel tm : todaysTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-				}
+			String targetUrl = EksiciResourceUtil.getTodaysTopicsUrl(System.currentTimeMillis());
+			if(pNextHref != null){
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() +  pNextHref;
 			}
-			return new ResponseEntity<List<GenericPager<TopicModel>>>(mainPage.getTodaysTopics(), HttpStatus.OK);
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveTodaysTopics(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
-	}
 	
+	}
 
 	@GetMapping(VERSION_ONE + "/topic/deserted")
-	public ResponseEntity<List<GenericPager<TopicModel>>> desertedTopics() throws EksiApiException {
-		
+	public ResponseEntity<GenericPager<TopicModel>> desertedTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+		pNextHref = parseNextToken(pNextHref);
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
-		MainPageModel mainPage = new MainPageModel();
 		try {
 			log.debug("Deserted Topics:");
-			GenericPager<TopicModel> desertedTopicCurrentPage = null;
-			while((desertedTopicCurrentPage = eksiciService.retrieveDesertedTopics(mainPage)) != null){
-				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
-				}
+			String targetUrl = EksiciResourceUtil.getDesertedTopicsUrl(System.currentTimeMillis());
+			if(pNextHref != null){
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() +  pNextHref;
 			}
-			return new ResponseEntity<List<GenericPager<TopicModel>>>(mainPage.getDesertedTopics(), HttpStatus.OK);
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveDesertedTopics(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
 	}
 
 	@GetMapping(VERSION_ONE + "/topic/videos")
-	public ResponseEntity<List<GenericPager<TopicModel>>> videoTopics() throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> videoTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+		pNextHref = parseNextToken(pNextHref);
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
-		MainPageModel mainPage = new MainPageModel();
 		try {
-			log.debug("Video Topics:");
-			GenericPager<TopicModel> videoTopicCurrentPage = null;
-			while((videoTopicCurrentPage = eksiciService.retrieveVideos(mainPage)) != null){
-				for(TopicModel tm : videoTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getOriginalUrl());
-				}
+			log.debug("Deserted Topics:");
+			String targetUrl = EksiciResourceUtil.getVideosUrl(System.currentTimeMillis());
+			if(pNextHref != null){
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() +  pNextHref;
 			}
-			return new ResponseEntity<List<GenericPager<TopicModel>>>(mainPage.getVideoTopics(), HttpStatus.OK);
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveVideos(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
+	
 	}
 
 	@GetMapping(VERSION_ONE + "/topic/todayinhistory/{year}")
-	public ResponseEntity<List<GenericPager<TopicModel>>> todayInHistory(@PathVariable("year") int pYear) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> todayInHistory(@PathVariable("year") int pYear,@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+		pNextHref = parseNextToken(pNextHref);
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
-		MainPageModel mainPage = new MainPageModel();
 		try {
-			log.debug("Today In History Topics:");
-			GenericPager<TopicModel> desertedTopicCurrentPage = null;
-			while((desertedTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(mainPage,pYear)) != null){
-				for(TopicModel tm : desertedTopicCurrentPage.getContentList()){
-					log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-					}
+			log.debug("Deserted Topics:");
+			String targetUrl = EksiciResourceUtil.getTodayInHistoryTopicsUrl(System.currentTimeMillis(),pYear);
+			if(pNextHref != null){
+				targetUrl = EksiciResourceUtil.getHeaderReferrer() +  pNextHref;
 			}
-			return new ResponseEntity<List<GenericPager<TopicModel>>>(mainPage.getTodayInHistoryTopics(), HttpStatus.OK);
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
+	
+	
 	}
 
 
@@ -178,35 +178,29 @@ public class EksiciRestApiController {
 	}
 
 	
-	@GetMapping(VERSION_ONE + "/channels/{channel}/topics") 
-	public ResponseEntity<List<GenericPager<TopicModel>>> channelTopics(@PathVariable("channel") String pChannelName) throws EksiApiException {
+	@GetMapping(VERSION_ONE + "/channels/topics") 
+	public ResponseEntity<GenericPager<TopicModel>> channelTopics(@RequestParam(value="topicsHref", required=true) String pNextHref) throws EksiApiException {
+		
+
+
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
-			log.debug("Channel Topics:" + URLEncoder.encode(pChannelName,"UTF-8"));
-			GenericPager<TopicModel> channelTopics = null;
-			ChannelModel channelInput = null;
-			
-			List<ChannelModel> channels = eksiciService.retrieveChannels();
-			for(ChannelModel channel : channels){
-				String decodedHref = URLDecoder.decode(channel.getHref(), "UTF-8");
-				log.debug(decodedHref + " - " + channel.getName());
-				if(channel.getName().equals("#"+pChannelName)){
-					channelInput = channel;
-					break;
-				}
+			if(pNextHref.contains("?")){
+				String[] splitted = pNextHref.split("\\?");
+				pNextHref =  URLEncoder.encode(splitted[0],"UTF-8") + "?" + splitted[1];
+			}else{
+				pNextHref =  URLEncoder.encode(pNextHref,"UTF-8");
 			}
-			if(channelInput == null) {
-				throw new EksiApiException(pChannelName + " bulunamadı.");
-			}
-			while((channelTopics = eksiciService.retrieveChannelTopics(channelInput)) != null){
-			for(TopicModel tm : channelTopics.getContentList()){
-				log.debug(tm.getTopicText() + "(" + tm.getRelatedEntryCount() + ") - " + tm.getHref());
-			}
-			}
-			return new ResponseEntity<List<GenericPager<TopicModel>>>(channelInput.getTopics(), HttpStatus.OK);
+			log.debug("Deserted Topics:");
+			String targetUrl = EksiciResourceUtil.getHeaderReferrer() + pNextHref;
+			GenericPager<TopicModel> popularTopicCurrentPage = eksiciService.retrieveTodayInHistoryTopics(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(popularTopicCurrentPage, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
 		} 
+	
+	
+	
 	}
 
 	@ExceptionHandler(EksiApiException.class)
@@ -215,6 +209,13 @@ public class EksiciRestApiController {
 		error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
 		error.setMessage(ex.getMessage());
 		return new ResponseEntity<EksiciRestErrorResponse>(error, HttpStatus.OK);
+	}
+	
+	private String parseNextToken(String pNextHref) {
+		if(httpServletRequest.getQueryString().contains("nextPageHref")){
+			return httpServletRequest.getQueryString().replaceAll("nextPageHref=", "");
+		}
+		return pNextHref;
 	}
 
 }

@@ -8,11 +8,15 @@ public class ChannelModel extends EksiBaseModel{
 	
 	private String name ; 
 	
-	private String href ;
-	
 	private String title;
 	
+	private String topicsUrl ;
+	
 	private List<GenericPager<TopicModel>> topics ;
+	
+	public ChannelModel(String href) {
+		super(href);
+	}
 	
 	public String getName() {
 		return name;
@@ -20,14 +24,6 @@ public class ChannelModel extends EksiBaseModel{
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getHref() {
-		return href;
-	}
-
-	public void setHref(String href) {
-		this.href = href;
 	}
 
 	public String getTitle() {
@@ -44,6 +40,14 @@ public class ChannelModel extends EksiBaseModel{
 
 	public void setTopics(List<GenericPager<TopicModel>> topics) {
 		this.topics = topics;
+	}
+
+	public String getTopicsUrl() {
+		return topicsUrl;
+	}
+
+	public void setTopicsUrl(String topicsUrl) {
+		this.topicsUrl = topicsUrl;
 	}
 	
 	
