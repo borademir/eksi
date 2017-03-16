@@ -268,7 +268,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				}
 			}
 			if(!anyParamExists){
-				return pUrl + "?p=1";
+				return pUrl + "?p=2";
 			}
 			String[] queryParams = splitted[1].split("&");
 			for(String queryParam : queryParams){
@@ -281,7 +281,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			}
 		} catch (Exception e) {
 		}
-		return pUrl + "&p=1";
+		return pUrl + "&p=2";
 	}
 	
 	@Override
