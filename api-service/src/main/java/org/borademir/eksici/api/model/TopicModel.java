@@ -16,6 +16,7 @@ public class TopicModel extends EksiBaseModel {
 	private List<EntryModel> entryList ;
 	private Integer currentEntryPage ;
 	private Integer totalEntryPage ; 
+	private List<PageInfoModel> pageList ; 
 	
 	public TopicModel(String href) {
 		super(href);
@@ -66,6 +67,14 @@ public class TopicModel extends EksiBaseModel {
 	}
 	public void setCurrentEntryPage(Integer currentEntryPage) {
 		this.currentEntryPage = currentEntryPage;
+	}
+
+	public List<PageInfoModel> getPageList() {
+		return pageList;
+	}
+
+	public void setPageList(List<PageInfoModel> pageList) {
+		this.pageList = pageList;
 	}
 
 }

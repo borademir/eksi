@@ -14,6 +14,7 @@ import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
+import org.borademir.eksici.api.model.PageInfoModel;
 import org.borademir.eksici.api.model.SuserModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.api.model.TopicTypes;
@@ -256,7 +257,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		currentPopularPage.setContentList(topicList);
 		return currentPopularPage;
 	}
-	private String getEntryNextPageHref(String pUrl){
+	private PageInfoModel getEntryNextPageHref(String pUrl){
 		try {
 			pUrl = pUrl.replaceAll(EksiciResourceUtil.getHeaderReferrer(), "");
 			
@@ -268,20 +269,30 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				}
 			}
 			if(!anyParamExists){
-				return pUrl + "?p=2";
+				PageInfoModel pi = new PageInfoModel();
+				pi.setPageNumber(2);
+				pi.setPageHref(pUrl + "?p=2");
+				return pi;
 			}
 			String[] queryParams = splitted[1].split("&");
 			for(String queryParam : queryParams){
 				String[] pageParamArray = queryParam.split("=");
 				if("p".equals(pageParamArray[0])){
 					String existingPageParam = pageParamArray[0] + "=" + pageParamArray[1];
-					String newPageParam = "p=" + (Integer.valueOf(pageParamArray[1])+1);
-					return pUrl.replaceAll(existingPageParam, newPageParam);
+					int nextPageNum = Integer.valueOf(pageParamArray[1])+1;
+					String newPageParam = "p=" + (nextPageNum);
+					PageInfoModel pi = new PageInfoModel();
+					pi.setPageNumber(nextPageNum);
+					pi.setPageHref(pUrl.replaceAll(existingPageParam, newPageParam));
+					return pi;
 				}
 			}
 		} catch (Exception e) {
 		}
-		return pUrl + "&p=2";
+		PageInfoModel pi = new PageInfoModel();
+		pi.setPageNumber(2);
+		pi.setPageHref(pUrl + "&p=2");
+		return pi;
 	}
 	
 	@Override
@@ -316,12 +327,25 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			returnTopic.setCurrentEntryPage(currentPage);
 			returnTopic.setTotalEntryPage(maxPage);
 			
-			Element nextAnchor = pagerDivelement.select("a.next").first();
-			if(nextAnchor != null){
-				returnTopic.setNextPageHref(nextAnchor.attr("href"));
-			}else{
-				returnTopic.setNextPageHref(getEntryNextPageHref(pUrl));
+//			Element nextAnchor = pagerDivelement.select("a.next").first();
+//			if(nextAnchor != null){
+//				returnTopic.setNextPageHref(nextAnchor.attr("href"));
+//			}else{}
+
+			PageInfoModel nextPageInfo = getEntryNextPageHref(pUrl);
+			returnTopic.setNextPageHref(nextPageInfo.getPageHref());
+			
+			String nextPageReplacement = "p=" + nextPageInfo.getPageNumber();
+			
+			returnTopic.setPageList(new ArrayList<PageInfoModel>());
+			
+			for(int i=1;i<=maxPage;i++){
+				PageInfoModel pager = new PageInfoModel();
+				pager.setPageNumber(i);
+				pager.setPageHref(nextPageInfo.getPageHref().replaceAll(nextPageReplacement, "p="+i));
+				returnTopic.getPageList().add(pager);
 			}
+		
 		}
 		
 		
