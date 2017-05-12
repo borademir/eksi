@@ -18,6 +18,7 @@ public class TopicModel extends EksiBaseModel {
 	private Integer totalEntryPage ; 
 	private List<PageInfoModel> pageList ; 
 	private List<TopicModel> suggestedTopicList;
+	private String errorText ;
 	
 	public TopicModel(String href) {
 		super(href);
@@ -84,6 +85,14 @@ public class TopicModel extends EksiBaseModel {
 
 	public void setSuggestedTopicList(List<TopicModel> suggestedTopicList) {
 		this.suggestedTopicList = suggestedTopicList;
+	}
+
+	public String getErrorText() {
+		return errorText;
+	}
+
+	public void setErrorText(String errorText) {
+		this.errorText = errorText;
 	}
 
 }
