@@ -47,8 +47,8 @@ public class EksiciRestApiController {
 	@SuppressWarnings("unused")
 	@GetMapping(VERSION_ONE + "/topic/search")
 	public ResponseEntity<List<GenericPager<TopicModel>>> search( 
-			@RequestParam(value="keyword", required=true) String pKeyword,
-			@RequestParam(value="author", required=true) String pAuthor) throws EksiApiException {
+			@RequestParam(value="keyword", required=false) String pKeyword,
+			@RequestParam(value="author", required=false) String pAuthor) throws EksiApiException {
 		
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		MainPageModel mainPage = new MainPageModel();
