@@ -312,9 +312,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 //		if(pSukelaMod != null){
 //			conn.data("a", pSukelaMod.name().toLowerCase());
 //		}
-		
-		TopicModel returnTopic = new TopicModel(pUrl);
 		Response response = conn.execute();
+		if(pUrl.startsWith(EksiciResourceUtil.getHeaderReferrer() + "?q=")){
+			pUrl = EksiciResourceUtil.getHeaderReferrer() + response.url().getPath();
+		}
+		TopicModel returnTopic = new TopicModel(pUrl);
 		
 		Document doc = response.parse();
 		
@@ -324,7 +326,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		 * 
 		**/
 		if(response.statusCode() == 404){
-			
+			returnTopic.setErrorText("böyle bir şey yok");
 			Elements suggesTopicsElements = doc.getElementsByAttributeValue("class", "suggested-title");
 			if(suggesTopicsElements != null && suggesTopicsElements.size() > 0){
 				for(Element suggestTopicEl : suggesTopicsElements){
@@ -336,6 +338,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 					
 					if(returnTopic.getSuggestedTopicList() == null){
 						returnTopic.setSuggestedTopicList(new ArrayList<TopicModel>());
+						returnTopic.setErrorText("böyle bir şey yok. ama bunu demek istemiş olabilir misiniz");
 					}
 					
 					returnTopic.getSuggestedTopicList().add(suggestTopic);
