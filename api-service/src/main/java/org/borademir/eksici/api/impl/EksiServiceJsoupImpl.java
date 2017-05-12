@@ -306,6 +306,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
 		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.ignoreHttpErrors(true)
 		.method(Method.GET);
 		
 //		if(pSukelaMod != null){
@@ -317,101 +318,127 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		Document doc = response.parse();
 		
-		Element pagerDivelement = doc.select("div.pager").first();
-		if(pagerDivelement == null){
-			returnTopic.setCurrentEntryPage(1);
-			returnTopic.setTotalEntryPage(1);
+		/**
+		 * böyle bir şey yok. ama bunu demek istemiş olabilir misiniz: blogu icin impl edildi.
+		 * eksisozluk bknz lari bulamasa da response olarak 404 donuyor ama sayfa da response ediyor.
+		 * 
+		**/
+		if(response.statusCode() == 404){
+			
+			Elements suggesTopicsElements = doc.getElementsByAttributeValue("class", "suggested-title");
+			if(suggesTopicsElements != null && suggesTopicsElements.size() > 0){
+				for(Element suggestTopicEl : suggesTopicsElements){
+					String href = suggestTopicEl.attr("href");
+					String text = suggestTopicEl.text();
+					
+					TopicModel suggestTopic = new TopicModel(href);
+					suggestTopic.setTopicText(text);
+					
+					if(returnTopic.getSuggestedTopicList() == null){
+						returnTopic.setSuggestedTopicList(new ArrayList<TopicModel>());
+					}
+					
+					returnTopic.getSuggestedTopicList().add(suggestTopic);
+				}
+			}
 		}else{
-			int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
-			int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
-			returnTopic.setCurrentEntryPage(currentPage);
-			returnTopic.setTotalEntryPage(maxPage);
 			
-//			Element nextAnchor = pagerDivelement.select("a.next").first();
-//			if(nextAnchor != null){
-//				returnTopic.setNextPageHref(nextAnchor.attr("href"));
-//			}else{}
+			Element pagerDivelement = doc.select("div.pager").first();
+			if(pagerDivelement == null){
+				returnTopic.setCurrentEntryPage(1);
+				returnTopic.setTotalEntryPage(1);
+			}else{
+				int maxPage = Integer.valueOf(pagerDivelement.attr("data-pagecount"));
+				int currentPage = Integer.valueOf(pagerDivelement.attr("data-currentpage"));
+				returnTopic.setCurrentEntryPage(currentPage);
+				returnTopic.setTotalEntryPage(maxPage);
+				
+//				Element nextAnchor = pagerDivelement.select("a.next").first();
+//				if(nextAnchor != null){
+//					returnTopic.setNextPageHref(nextAnchor.attr("href"));
+//				}else{}
 
-			PageInfoModel nextPageInfo = getEntryNextPageHref(pUrl);
-			returnTopic.setNextPageHref(nextPageInfo.getPageHref());
+				PageInfoModel nextPageInfo = getEntryNextPageHref(pUrl);
+				returnTopic.setNextPageHref(nextPageInfo.getPageHref());
+				
+				String nextPageReplacement = "p=" + nextPageInfo.getPageNumber();
+				
+				returnTopic.setPageList(new ArrayList<PageInfoModel>());
+				
+				for(int i=1;i<=maxPage;i++){
+					PageInfoModel pager = new PageInfoModel();
+					pager.setPageNumber(i);
+					pager.setPageHref(nextPageInfo.getPageHref().replaceAll(nextPageReplacement, "p="+i));
+					returnTopic.getPageList().add(pager);
+				}
 			
-			String nextPageReplacement = "p=" + nextPageInfo.getPageNumber();
-			
-			returnTopic.setPageList(new ArrayList<PageInfoModel>());
-			
-			for(int i=1;i<=maxPage;i++){
-				PageInfoModel pager = new PageInfoModel();
-				pager.setPageNumber(i);
-				pager.setPageHref(nextPageInfo.getPageHref().replaceAll(nextPageReplacement, "p="+i));
-				returnTopic.getPageList().add(pager);
 			}
-		
-		}
-		
-		
-		Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
-		if(topicInfoElements != null && topicInfoElements.size() > 0){
-			Element topicLink = topicInfoElements.get(0);
-			returnTopic.setOriginalUrl(topicLink.attr("href"));
-			returnTopic.setTopicText(topicLink.text());
-		}
-		
-		Element entryListUlElement = doc.getElementById("entry-list");
-		Elements liElements = entryListUlElement.getElementsByTag("li");
-		
-		if(returnTopic.getEntryList() == null){
-			returnTopic.setEntryList(new ArrayList<EntryModel>());
-		}
-		
-		for(Element liEl : liElements){
-			String entryId = liEl.attr("data-id");
-			String entryAuthor = liEl.attr("data-author");
-			String entryAuthorId = liEl.attr("data-author-id");
-			String dataIsFavorite = liEl.attr("data-isfavorite");
-			int favoriteCount = Integer.valueOf(liEl.attr("data-favorite-count"));
-			int commentCount = Integer.valueOf(liEl.attr("data-comment-count"));
 			
-			if(liEl.attr("data-seyler-slug").trim().length() > 0){
-				log.debug(liEl.attr("data-seyler-slug"));
+			
+			Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
+			if(topicInfoElements != null && topicInfoElements.size() > 0){
+				Element topicLink = topicInfoElements.get(0);
+				returnTopic.setOriginalUrl(topicLink.attr("href"));
+				returnTopic.setTopicText(topicLink.text());
 			}
-
-			Element infoElement = liEl.getElementsByAttributeValue("class", "info").get(0);
-			Element entryDateElement = infoElement.getElementsByAttributeValue("class","entry-date permalink").get(0);
-			String entryDate = entryDateElement.text();
-			String entryHref = entryDateElement.attr("href");
 			
-			EntryModel entryModel = new EntryModel(entryHref);
-			entryModel.setCommentCount(commentCount);
-			entryModel.setDataIsFavorite(dataIsFavorite);
-			SuserModel suser = new SuserModel();
-			suser.setEntryAuthor(entryAuthor);
-			suser.setEntryAuthorId(entryAuthorId);
-			entryModel.setSuser(suser);
-			entryModel.setEntryId(entryId);
-			entryModel.setFavoriteCount(favoriteCount);
+			Element entryListUlElement = doc.getElementById("entry-list");
+			Elements liElements = entryListUlElement.getElementsByTag("li");
 			
+			if(returnTopic.getEntryList() == null){
+				returnTopic.setEntryList(new ArrayList<EntryModel>());
+			}
 			
-			
-			
-			entryModel.setEntryDate(entryDate);
-			
+			for(Element liEl : liElements){
+				String entryId = liEl.attr("data-id");
+				String entryAuthor = liEl.attr("data-author");
+				String entryAuthorId = liEl.attr("data-author-id");
+				String dataIsFavorite = liEl.attr("data-isfavorite");
+				int favoriteCount = Integer.valueOf(liEl.attr("data-favorite-count"));
+				int commentCount = Integer.valueOf(liEl.attr("data-comment-count"));
+				
+				if(liEl.attr("data-seyler-slug").trim().length() > 0){
+					log.debug(liEl.attr("data-seyler-slug"));
+				}
+				
+				Element infoElement = liEl.getElementsByAttributeValue("class", "info").get(0);
+				Element entryDateElement = infoElement.getElementsByAttributeValue("class","entry-date permalink").get(0);
+				String entryDate = entryDateElement.text();
+				String entryHref = entryDateElement.attr("href");
+				
+				EntryModel entryModel = new EntryModel(entryHref);
+				entryModel.setCommentCount(commentCount);
+				entryModel.setDataIsFavorite(dataIsFavorite);
+				SuserModel suser = new SuserModel();
+				suser.setEntryAuthor(entryAuthor);
+				suser.setEntryAuthorId(entryAuthorId);
+				entryModel.setSuser(suser);
+				entryModel.setEntryId(entryId);
+				entryModel.setFavoriteCount(favoriteCount);
+				
+				
+				
+				
+				entryModel.setEntryDate(entryDate);
+				
 //			try {
 //				entryModel.setEntryDate(EksiciDateUtil.formateEntryDate(entryDate));
 //			} catch (ParseException e) {
 //				e.printStackTrace();
 //			}
-			
-			Element authorElement = infoElement.getElementsByAttributeValue("class","entry-author").get(0);
-			
-			suser.setHref(authorElement.attr("href"));
-			
-			Element contentElement = liEl.getElementsByAttributeValue("class", "content").get(0);
-			
-			entryModel.setEntryText(contentElement.text());
-			entryModel.setEntryHtml(contentElement.html());
-			
-			returnTopic.getEntryList().add(entryModel);
-			
+				
+				Element authorElement = infoElement.getElementsByAttributeValue("class","entry-author").get(0);
+				
+				suser.setHref(authorElement.attr("href"));
+				
+				Element contentElement = liEl.getElementsByAttributeValue("class", "content").get(0);
+				
+				entryModel.setEntryText(contentElement.text());
+				entryModel.setEntryHtml(contentElement.html());
+				
+				returnTopic.getEntryList().add(entryModel);
+				
+			}
 		}
 		
 		return returnTopic;
