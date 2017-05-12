@@ -32,11 +32,11 @@ public class ServiceTester {
 		boolean processPopulars = false;
 		boolean processTodays = false;
 		boolean processDeserted = false;
-		boolean processTodayInHistory = true;
+		boolean processTodayInHistory = false;
 		boolean processChannels = false;
 		boolean processVideos = false;
 		
-		boolean processSearch = false;
+		boolean processSearch = true;
 		
 		
 		
@@ -138,7 +138,7 @@ public class ServiceTester {
 		if(processSearch){
 			SearchCriteriaModel searchCriteriaModel = new SearchCriteriaModel();
 			searchCriteriaModel.setKeywords("aykut"); 
-			searchCriteriaModel.setAuthor("qlluq");
+//			searchCriteriaModel.setAuthor("qlluq");
 			mainPage.setSearchCriteria(searchCriteriaModel);
 			log.debug(searchCriteriaModel);
 			log.debug("Search results:");
