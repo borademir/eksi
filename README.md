@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/borademir/eksi.svg?branch=master)](https://travis-ci.org/borademir/eksi)
+[![Heroku](https://heroku-badge.herokuapp.com/?app=eksici-api&root=api)]
 
 Ekşi Sözlük Gayrıresmi API
 ===================
