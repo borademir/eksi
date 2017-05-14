@@ -36,7 +36,9 @@ public class ServiceTester {
 		boolean processChannels = false;
 		boolean processVideos = false;
 		
-		boolean processSearch = true;
+		boolean processSearch = false;
+		
+		boolean processAutocomplete = true;
 		
 		
 		
@@ -154,6 +156,10 @@ public class ServiceTester {
 			}
 		}
 		
+		if(processAutocomplete){
+			String pUrl = EksiciResourceUtil.getAutocompleteUrl(System.currentTimeMillis(),"aykut");
+			eksiciService.autocomplete(pUrl);
+		}
 		
 //		log.debug(maxFav.getEntryHref());
 //		log.debug(maxFav.getEntryText());

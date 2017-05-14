@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.IEksiService;
+import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
@@ -20,6 +21,8 @@ import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.api.model.TopicTypes;
 import org.borademir.eksici.api.test.ServiceTester;
 import org.borademir.eksici.conf.EksiciResourceUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
@@ -175,6 +178,62 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		return currentPage;
 	}
 
+	
+	@Override
+	public Autocomplete autocomplete(String pUrl) throws IOException {
+
+		
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		Response response = conn.execute();
+		
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		
+		JSONObject jsonObj = new JSONObject(doc.text());
+//		{"Titles":["aykut","aykut kocaman","aykut erdoğdu","aykut demir","31 aralık 2016 aykut demir\u0027in gelinsiz düğünü","aykut erçetin","aykut zahid akman"],"Query":"aykut","Nicks":["aykut","aykut23","aykutungamsesi"]}
+
+		Autocomplete serviceResponse = new Autocomplete();
+		if(jsonObj.has("Query")){
+			serviceResponse.setQuery(jsonObj.getString("Query"));
+			if(jsonObj.has("Titles")){
+				JSONArray titlesJsonArray = jsonObj.getJSONArray("Titles");
+				for(int i=0;i<titlesJsonArray.length();i++){
+					String title = titlesJsonArray.getString(i);
+					if(serviceResponse.getTopicList() == null){
+						serviceResponse.setTopicList(new ArrayList<TopicModel>());
+					}
+					TopicModel tm = new TopicModel("?q=" + title);  // like bknz.
+					tm.setTopicText(title);
+					serviceResponse.getTopicList().add(tm);
+				}
+			}
+			
+			if(jsonObj.has("Nicks")){
+				JSONArray nickJsonArray = jsonObj.getJSONArray("Nicks");
+				for(int i=0;i<nickJsonArray.length();i++){
+					String nick = nickJsonArray.getString(i);
+					if(serviceResponse.getSuserList() == null){
+						serviceResponse.setSuserList(new ArrayList<SuserModel>());
+					}
+					SuserModel sm = new SuserModel();
+					sm.setEntryAuthor(nick);
+					serviceResponse.getSuserList().add(sm);
+				}
+			
+			}
+		}
+		
+		return serviceResponse;
+	}
+	
 	@Override
 	public GenericPager<TopicModel> retrieveDesertedTopics(String pUrl) throws IOException {
 

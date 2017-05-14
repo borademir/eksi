@@ -67,6 +67,11 @@ public class EksiciResourceUtil {
 		return PROPERTIES.getProperty("url.desertedtopics") + pTimeInMs;
 	}
 	
+	public static String getAutocompleteUrl(long pTimeInMs, String pKeyword){
+		return PROPERTIES.getProperty("url.autocomplete") + pTimeInMs + "&q=" + pKeyword ; //+ "^";
+	}
+	
+	
 	public static String getVideosUrl(long pTimeInMs){
 		return PROPERTIES.getProperty("url.videos") + pTimeInMs;
 	}

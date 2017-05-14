@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.EksiApiServiceFactory;
 import org.borademir.eksici.api.IEksiService;
+import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
@@ -196,6 +197,20 @@ public class EksiciRestApiController {
 		} 
 	}
 
+	
+	@GetMapping(VERSION_ONE + "/autocomplete") 
+	public ResponseEntity<Autocomplete> autocomplete(@RequestParam(value="query", required=true) String pQueryParam) throws EksiApiException {
+
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("autocomplete:");
+			String targetUrl = EksiciResourceUtil.getAutocompleteUrl(System.currentTimeMillis(), pQueryParam);
+			Autocomplete autocomplete = eksiciService.autocomplete(targetUrl);
+			return new ResponseEntity<Autocomplete>(autocomplete, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new EksiApiException(e.getMessage());
+		} 
+	}
 	
 	@GetMapping(VERSION_ONE + "/topics/entries") 
 	public ResponseEntity<TopicModel> topicEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
