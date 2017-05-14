@@ -12,7 +12,7 @@
 	<artifactId>api-web</artifactId>
 	<name>api-web</name>
 	<packaging>war</packaging>
-	
+
 	<properties>
 		<spring.version>4.3.4.RELEASE</spring.version>
 		<jackson.version>2.7.5</jackson.version>
@@ -20,13 +20,13 @@
 	</properties>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-servlet_2.4_spec</artifactId>
 			<version>1.1.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -44,19 +44,25 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.borademir.eksici</groupId>
 			<artifactId>api-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<finalName>api</finalName>
@@ -71,14 +77,15 @@
 				</configuration>
 			</plugin>
 			<plugin>
-			  <groupId>org.eclipse.jetty</groupId>
-			  <artifactId>jetty-maven-plugin</artifactId>
-			  <version>9.0.5.v20130815</version>
-			  <configuration>
-			  <webApp>
-			  	<contextPath>/api</contextPath>7
-			  </webApp>
-			  </configuration>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.0.5.v20130815</version>
+				<configuration>
+					<webApp>
+						<contextPath>/api</contextPath>
+						7
+					</webApp>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
