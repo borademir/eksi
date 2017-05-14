@@ -83,7 +83,6 @@
 				<configuration>
 					<webApp>
 						<contextPath>/api</contextPath>
-						7
 					</webApp>
 				</configuration>
 			</plugin>
