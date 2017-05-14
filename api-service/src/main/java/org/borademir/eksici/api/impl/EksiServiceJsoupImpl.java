@@ -436,6 +436,21 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			
 			}
 			
+			Elements sukelaElements = doc.getElementsByAttributeValue("class", "nice-mode-toggler");
+			
+			if(sukelaElements != null && sukelaElements.size() > 0){
+				Element spanEl = sukelaElements.get(0);
+				Elements hrefElements = spanEl.getElementsByTag("a");
+				if(hrefElements != null && hrefElements.size() > 0){
+					if(hrefElements.size() == 1){
+						returnTopic.setNiceAllHref(hrefElements.get(0).attr("href"));
+					}else if(hrefElements.size() == 2){
+						returnTopic.setNiceAllHref(hrefElements.get(0).attr("href"));
+						returnTopic.setNiceTodayHref(hrefElements.get(1).attr("href"));
+					}
+				}
+			}
+			
 			
 			Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
 			if(topicInfoElements != null && topicInfoElements.size() > 0){

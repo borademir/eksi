@@ -19,6 +19,8 @@ public class TopicModel extends EksiBaseModel {
 	private List<PageInfoModel> pageList ; 
 	private List<TopicModel> suggestedTopicList;
 	private String errorText ;
+	private String niceAllHref ;
+	private String niceTodayHref ;
 	
 	public TopicModel(String href) {
 		super(href);
@@ -93,6 +95,22 @@ public class TopicModel extends EksiBaseModel {
 
 	public void setErrorText(String errorText) {
 		this.errorText = errorText;
+	}
+
+	public String getNiceAllHref() {
+		return niceAllHref;
+	}
+
+	public void setNiceAllHref(String niceAllHref) {
+		this.niceAllHref = niceAllHref;
+	}
+
+	public String getNiceTodayHref() {
+		return niceTodayHref;
+	}
+
+	public void setNiceTodayHref(String niceTodayHref) {
+		this.niceTodayHref = niceTodayHref;
 	}
 
 }
