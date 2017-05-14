@@ -38,6 +38,10 @@ Burada yapılan tüm geliştirmeler linode vps sunucumuz üzerinden de demo ama�
 > - <a href="http://www.eksici.com/api/v1/topics/entries?topicsHref=/portakal-bicaklayarak-hollandayi-protesto-etmek--5319445?a=popular" target="_blank">portakal-bicaklayarak-hollandayi-protesto-etmek</a>
 > - <a href="http://www.eksici.com/api/v1/topics/entries?topicsHref=/portakal-bicaklayarak-hollandayi-protesto-etmek--5319445?a=popular&p=2" target="_blank">portakal-bicaklayarak-hollandayi-protesto-etmek ( Sayfa 2 )</a>
 > - <a href="http://www.eksici.com/api/v1/entry/66802288" target="_blank">Entry</a>
+> - <a href="http://www.eksici.com/api/v1/topic/search?author=qlluq&keyword=aykut" target="_blank">Detayli Arama</a>
+> - <a href="http://www.eksici.com/api/v1/autocomplete?query=tuna" target="_blank">Autocomplete Arama</a>
+
+
 
 
 
