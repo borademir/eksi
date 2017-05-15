@@ -21,6 +21,9 @@ public class TopicModel extends EksiBaseModel {
 	private String errorText ;
 	private String niceAllHref ;
 	private String niceTodayHref ;
+	private String pagingHrefTemplate ;
+	private TopicModel beforeEntries ;
+	private TopicModel afterEntries ;
 	
 	public TopicModel(String href) {
 		super(href);
@@ -112,5 +115,30 @@ public class TopicModel extends EksiBaseModel {
 	public void setNiceTodayHref(String niceTodayHref) {
 		this.niceTodayHref = niceTodayHref;
 	}
+
+	public String getPagingHrefTemplate() {
+		return pagingHrefTemplate;
+	}
+
+	public void setPagingHrefTemplate(String pagingHrefTemplate) {
+		this.pagingHrefTemplate = pagingHrefTemplate;
+	}
+
+	public TopicModel getBeforeEntries() {
+		return beforeEntries;
+	}
+
+	public void setBeforeEntries(TopicModel beforeEntries) {
+		this.beforeEntries = beforeEntries;
+	}
+
+	public TopicModel getAfterEntries() {
+		return afterEntries;
+	}
+
+	public void setAfterEntries(TopicModel afterEntries) {
+		this.afterEntries = afterEntries;
+	}
+
 
 }
