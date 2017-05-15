@@ -7,6 +7,7 @@ import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
+import org.borademir.eksici.api.model.SuserModel;
 import org.borademir.eksici.api.model.TopicModel;
 /**
  * @author bora.demir
@@ -23,7 +24,7 @@ public interface IEksiService extends IEksiBaseService{
 	
 	GenericPager<TopicModel> retrieveTodayInHistoryTopics(String pUrl) throws IOException;
 	
-	TopicModel retrieveEntries(String pUrl)  throws IOException;
+	TopicModel retrieveEntries(String pUrl, boolean pUsePageHrefTemplate)  throws IOException;
 	
 	List<ChannelModel> retrieveChannels() throws IOException;
 
@@ -32,5 +33,7 @@ public interface IEksiService extends IEksiBaseService{
 	GenericPager<TopicModel> search(MainPageModel pMainPage) throws EksiApiException, IOException;
 
 	Autocomplete autocomplete(String pUrl) throws IOException;
+
+	List<SuserModel> favorites(String targetUrl) throws EksiApiException, IOException;;
 
 }

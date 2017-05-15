@@ -14,6 +14,7 @@ import org.borademir.eksici.api.model.ChannelModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
 import org.borademir.eksici.api.model.SearchCriteriaModel;
+import org.borademir.eksici.api.model.SuserModel;
 import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.conf.EksiciResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,13 +214,27 @@ public class EksiciRestApiController {
 	}
 	
 	@GetMapping(VERSION_ONE + "/topics/entries") 
+	public ResponseEntity<TopicModel> topicsEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
+		topicsHref = parseNextToken(topicsHref,"topicsHref");
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("Deserted Topics:");
+			String targetUrl = EksiciResourceUtil.getHeaderReferrer() + topicsHref;
+			TopicModel retTopic = eksiciService.retrieveEntries(targetUrl,false);
+			return new ResponseEntity<TopicModel>(retTopic, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new EksiApiException(e.getMessage());
+		} 
+	}
+	
+	@GetMapping(VERSION_ONE + "/topic/entries") 
 	public ResponseEntity<TopicModel> topicEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
 		topicsHref = parseNextToken(topicsHref,"topicsHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("Deserted Topics:");
 			String targetUrl = EksiciResourceUtil.getHeaderReferrer() + topicsHref;
-			TopicModel retTopic = eksiciService.retrieveEntries(targetUrl);
+			TopicModel retTopic = eksiciService.retrieveEntries(targetUrl,true);
 			return new ResponseEntity<TopicModel>(retTopic, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
@@ -232,6 +247,19 @@ public class EksiciRestApiController {
 		return topicEntries("/entry/" +pEntryId );
 	}
 	
+	@GetMapping(VERSION_ONE + "/entry/{entryId}/favorites")
+	public ResponseEntity<List<SuserModel>> entryFavorities(@PathVariable("entryId") long pEntryId) throws EksiApiException {
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("autocomplete:");
+			String targetUrl = EksiciResourceUtil.getFavoritesUrl(System.currentTimeMillis(), pEntryId);
+			List<SuserModel> resp = eksiciService.favorites(targetUrl);
+			return new ResponseEntity<List<SuserModel>>(resp, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new EksiApiException(e.getMessage());
+		} 
+	
+	}
 	
 	@ExceptionHandler(EksiApiException.class)
 	public ResponseEntity<EksiciRestErrorResponse> exceptionHandler(Exception ex) {

@@ -177,7 +177,28 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		return currentPage;
 	}
-
+	@Override
+	public List<SuserModel> favorites(String targetUrl)throws EksiApiException, IOException {
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.header("authority", "eksisozluk.com")
+		.method(Method.GET);
+		
+		
+//		curl "https://eksisozluk.com/entry/favorileyenler?entryId=59551581^&_=1494847440942" 
+		
+		Response response = conn.execute();
+		
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		System.out.println(doc.html());
+		return null;
+	}
 	
 	@Override
 	public Autocomplete autocomplete(String pUrl) throws IOException {
@@ -355,7 +376,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 	
 	@Override
-	public TopicModel retrieveEntries(String pUrl) throws IOException {
+	public TopicModel retrieveEntries(String pUrl,boolean pUsePageHrefTemplate) throws IOException {
 		
 		
 		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
@@ -425,14 +446,19 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				
 				String nextPageReplacement = "p=" + nextPageInfo.getPageNumber();
 				
-				returnTopic.setPageList(new ArrayList<PageInfoModel>());
-				
-				for(int i=1;i<=maxPage;i++){
-					PageInfoModel pager = new PageInfoModel();
-					pager.setPageNumber(i);
-					pager.setPageHref(nextPageInfo.getPageHref().replaceAll(nextPageReplacement, "p="+i));
-					returnTopic.getPageList().add(pager);
+				if(pUsePageHrefTemplate){
+					returnTopic.setPagingHrefTemplate(nextPageInfo.getPageHref().replaceAll(nextPageReplacement, "p="));
+				}else{
+					returnTopic.setPageList(new ArrayList<PageInfoModel>());
+					
+					for(int i=1;i<=maxPage;i++){
+						PageInfoModel pager = new PageInfoModel();
+						pager.setPageNumber(i);
+						pager.setPageHref(nextPageInfo.getPageHref().replaceAll(nextPageReplacement, "p="+i));
+						returnTopic.getPageList().add(pager);
+					}
 				}
+
 			
 			}
 			
@@ -450,6 +476,22 @@ public class EksiServiceJsoupImpl implements IEksiService {
 					}
 				}
 			}
+			
+			Elements moreEntryElements = doc.getElementsByAttributeValue("class", "showall more-data");
+			
+			if(moreEntryElements != null && moreEntryElements.size() > 0){
+				if(moreEntryElements.size() < 3){
+					TopicModel tBefore = new TopicModel(moreEntryElements.get(0).attr("href"));
+					tBefore.setTopicText(moreEntryElements.get(0).text());
+					returnTopic.setBeforeEntries(tBefore);
+					if(moreEntryElements.size() == 2){
+						TopicModel tAfter = new TopicModel(moreEntryElements.get(1).attr("href"));
+						tAfter.setTopicText(moreEntryElements.get(1).text());
+						returnTopic.setAfterEntries(tAfter);
+					}
+				}
+			}
+			
 			
 			
 			Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
@@ -640,4 +682,5 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			return topicList;
 		}
 	}
+
 }
