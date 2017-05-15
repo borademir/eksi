@@ -24,6 +24,7 @@ public class TopicModel extends EksiBaseModel {
 	private String pagingHrefTemplate ;
 	private TopicModel beforeEntries ;
 	private TopicModel afterEntries ;
+	private String focusTo ;
 	
 	public TopicModel(String href) {
 		super(href);
@@ -138,6 +139,14 @@ public class TopicModel extends EksiBaseModel {
 
 	public void setAfterEntries(TopicModel afterEntries) {
 		this.afterEntries = afterEntries;
+	}
+
+	public String getFocusTo() {
+		return focusTo;
+	}
+
+	public void setFocusTo(String focusTo) {
+		this.focusTo = focusTo;
 	}
 
 

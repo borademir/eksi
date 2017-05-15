@@ -2,6 +2,7 @@ package org.borademir.eksici.api.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -187,6 +188,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("X-Requested-With","XMLHttpRequest")
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.header("authority", "eksisozluk.com")
+		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
 		.method(Method.GET);
 		
 		
@@ -337,9 +339,17 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		currentPopularPage.setContentList(topicList);
 		return currentPopularPage;
 	}
-	private PageInfoModel getEntryNextPageHref(String pUrl){
+	private PageInfoModel getEntryNextPageHref(String pUrl, TopicModel returnTopic){
 		try {
-			pUrl = pUrl.replaceAll(EksiciResourceUtil.getHeaderReferrer(), "");
+			if(pUrl.contains("focusto=")){
+				URI uri = new URI(pUrl);
+				pUrl = uri.getPath();
+				String focusTo = uri.getQuery().replaceAll("focusto=", "");
+				returnTopic.setFocusTo(focusTo);
+				
+			}else{
+				pUrl = pUrl.replaceAll(EksiciResourceUtil.getHeaderReferrer(), "");
+			}
 			
 			boolean anyParamExists = false;
 			String[] splitted = pUrl.split("\\?");
@@ -441,7 +451,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 //					returnTopic.setNextPageHref(nextAnchor.attr("href"));
 //				}else{}
 
-				PageInfoModel nextPageInfo = getEntryNextPageHref(pUrl);
+				PageInfoModel nextPageInfo = getEntryNextPageHref(pUrl,returnTopic);
 				returnTopic.setNextPageHref(nextPageInfo.getPageHref());
 				
 				String nextPageReplacement = "p=" + nextPageInfo.getPageNumber();
@@ -481,11 +491,11 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			
 			if(moreEntryElements != null && moreEntryElements.size() > 0){
 				if(moreEntryElements.size() < 3){
-					TopicModel tBefore = new TopicModel(moreEntryElements.get(0).attr("href"));
+					TopicModel tBefore = new TopicModel(URLDecoder.decode(moreEntryElements.get(0).attr("href"),"UTF-8"));
 					tBefore.setTopicText(moreEntryElements.get(0).text());
 					returnTopic.setBeforeEntries(tBefore);
 					if(moreEntryElements.size() == 2){
-						TopicModel tAfter = new TopicModel(moreEntryElements.get(1).attr("href"));
+						TopicModel tAfter = new TopicModel(URLDecoder.decode(moreEntryElements.get(1).attr("href"),"UTF-8"));
 						tAfter.setTopicText(moreEntryElements.get(1).text());
 						returnTopic.setAfterEntries(tAfter);
 					}
