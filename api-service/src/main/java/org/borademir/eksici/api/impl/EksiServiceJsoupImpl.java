@@ -226,13 +226,13 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Autocomplete serviceResponse = new Autocomplete();
 		if(jsonObj.has("Query")){
 			serviceResponse.setQuery(jsonObj.getString("Query"));
+			serviceResponse.setTopicList(new ArrayList<TopicModel>());
+			serviceResponse.setSuserList(new ArrayList<SuserModel>());
+		
 			if(jsonObj.has("Titles")){
 				JSONArray titlesJsonArray = jsonObj.getJSONArray("Titles");
 				for(int i=0;i<titlesJsonArray.length();i++){
 					String title = titlesJsonArray.getString(i);
-					if(serviceResponse.getTopicList() == null){
-						serviceResponse.setTopicList(new ArrayList<TopicModel>());
-					}
 					TopicModel tm = new TopicModel("?q=" + title);  // like bknz.
 					tm.setTopicText(title);
 					serviceResponse.getTopicList().add(tm);
@@ -243,9 +243,6 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				JSONArray nickJsonArray = jsonObj.getJSONArray("Nicks");
 				for(int i=0;i<nickJsonArray.length();i++){
 					String nick = nickJsonArray.getString(i);
-					if(serviceResponse.getSuserList() == null){
-						serviceResponse.setSuserList(new ArrayList<SuserModel>());
-					}
 					SuserModel sm = new SuserModel();
 					sm.setEntryAuthor(nick);
 					serviceResponse.getSuserList().add(sm);
