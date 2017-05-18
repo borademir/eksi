@@ -247,6 +247,21 @@ public class EksiciRestApiController {
 		return topicEntries("/entry/" +pEntryId );
 	}
 	
+	
+	@GetMapping(VERSION_ONE + "/suser/{suserNick}")
+	public ResponseEntity<SuserModel> suser(@PathVariable("suserNick") String pSuserNick) throws EksiApiException {
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("suser:" + pSuserNick);
+			String targetUrl = EksiciResourceUtil.getSuserUrl(pSuserNick);
+			SuserModel resp = eksiciService.suser(targetUrl);
+			return new ResponseEntity<SuserModel>(resp, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new EksiApiException(e.getMessage());
+		} 
+	
+	}
+	
 	@GetMapping(VERSION_ONE + "/entry/{entryId}/favorites")
 	public ResponseEntity<List<SuserModel>> entryFavorities(@PathVariable("entryId") long pEntryId) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();

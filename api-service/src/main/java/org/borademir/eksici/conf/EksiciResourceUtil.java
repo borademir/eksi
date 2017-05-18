@@ -94,4 +94,8 @@ public class EksiciResourceUtil {
 	public static String getHeaderReferrer(){
 		return PROPERTIES.getProperty("header.referer");
 	}
+
+	public static String getSuserUrl(String pSuserNick) {
+		return PROPERTIES.getProperty("url.suser") + pSuserNick;
+	}
 }

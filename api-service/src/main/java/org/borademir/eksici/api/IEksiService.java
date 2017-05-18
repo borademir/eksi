@@ -34,6 +34,9 @@ public interface IEksiService extends IEksiBaseService{
 
 	Autocomplete autocomplete(String pUrl) throws IOException;
 
-	List<SuserModel> favorites(String targetUrl) throws EksiApiException, IOException;;
+	List<SuserModel> favorites(String targetUrl) throws EksiApiException, IOException;
+
+	SuserModel suser(String targetUrl) throws EksiApiException, IOException;
+
 
 }

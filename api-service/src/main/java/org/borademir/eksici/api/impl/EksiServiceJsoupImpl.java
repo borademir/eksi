@@ -22,6 +22,7 @@ import org.borademir.eksici.api.model.TopicModel;
 import org.borademir.eksici.api.model.TopicTypes;
 import org.borademir.eksici.api.test.ServiceTester;
 import org.borademir.eksici.conf.EksiciResourceUtil;
+import org.borademir.eksici.util.JSoupUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -688,6 +689,52 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			}
 			return topicList;
 		}
+	}
+	@Override
+	public SuserModel suser(String targetUrl) throws EksiApiException,IOException {
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		
+		Response response = conn.execute();
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		SuserModel retVal = new SuserModel();
+		Elements suserNotFoundElements = doc.getElementsByAttributeValue("class","field-validation-error");
+		if(suserNotFoundElements != null && suserNotFoundElements.size() > 0){
+			retVal.setErrorMessage(suserNotFoundElements.get(0).text());
+			return retVal;
+		}
+		
+		Element userProfileEl = doc.select("#user-profile-title > a").first();
+		if(userProfileEl != null) {
+			retVal.setNick(userProfileEl.text());
+			retVal.setTopicHref(userProfileEl.attr("href"));
+		}
+		
+		retVal.setTotalEntryCount(JSoupUtil.getElementTextById(doc,"entry-count-total"));
+		retVal.setLastMonthEntryCount(JSoupUtil.getElementTextById(doc, "entry-count-lastmonth"));
+		retVal.setLastWeekEntryCount(JSoupUtil.getElementTextById(doc, "entry-count-lastweek"));
+		retVal.setTodayEntryCount(JSoupUtil.getElementTextById(doc, "entry-count-today"));
+		retVal.setLastEntryTime(JSoupUtil.getElementTextById(doc, "last-entry-time"));
+		
+		Element introEntry =  doc.select("#quote-entry > h2 > a").first();
+		if(introEntry != null){
+			EntryModel introEntryModel = new EntryModel(introEntry.attr("href"));
+			introEntryModel.setEntryText(introEntry.text());
+			retVal.setProfileIntroEntry(introEntryModel);
+			
+			introEntryModel.setEntryHtml(JSoupUtil.getElementInnerHtmlBySelector(doc, "#quote-entry > .content"));
+			introEntryModel.setEntryDate(JSoupUtil.getElementTextBySelector(doc, "#quote-entry > footer"));
+		}
+		
+		System.out.println(doc.html());
+		return retVal;
 	}
 
 }

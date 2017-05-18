@@ -38,7 +38,9 @@ public class ServiceTester {
 		
 		boolean processSearch = false;
 		
-		boolean processAutocomplete = true;
+		boolean processAutocomplete = false;
+		
+		boolean processSuser = true;
 		
 		
 		
@@ -56,6 +58,11 @@ public class ServiceTester {
 					break;
 				}
 			}
+		}
+		
+		if(processSuser){
+			String targetUrl = EksiciResourceUtil.getSuserUrl("qlluq");
+			eksiciService.suser(targetUrl);
 		}
 
 
