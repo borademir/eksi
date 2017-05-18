@@ -175,8 +175,8 @@ public class ServiceTester {
 			 log.debug("\t\t\tEntryDate:" + entryModel.getEntryDate());
 			 log.debug("\t\t\tEntryLink:" + entryModel.getEntryHref());
 			 
-			 log.debug("\t\t\tAuthor:" + entryModel.getSuser().getEntryAuthor());
-			 log.debug("\t\t\tAuthorId:" + entryModel.getSuser().getEntryAuthorId());
+			 log.debug("\t\t\tAuthor:" + entryModel.getSuser().getNick());
+			 log.debug("\t\t\tAuthorId:" + entryModel.getSuser().getSuserId());
 			 log.debug("\t\t\tAuthorLink:" + entryModel.getSuser().getHref());
 			 
 			 if(maxFav == null || entryModel.getFavoriteCount() > maxFav.getFavoriteCount()){

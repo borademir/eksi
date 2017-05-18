@@ -42,8 +42,8 @@ public class EksiciApiTest {
 		 for(EntryModel entryModel : current.getContentList()){
 			 log.debug("\t\t" + entryModel.getEntryText());
 			 log.debug("\t\t\tEntryId:" + entryModel.getEntryId());
-			 log.debug("\t\t\tAuthor:" + entryModel.getSuser().getEntryAuthor());
-			 log.debug("\t\t\tAuthorId:" + entryModel.getSuser().getEntryAuthorId());
+			 log.debug("\t\t\tAuthor:" + entryModel.getSuser().getNick());
+			 log.debug("\t\t\tAuthorId:" + entryModel.getSuser().getSuserId());
 			 log.debug("\t\t\tFavoriteCount:" + entryModel.getFavoriteCount());
 			 log.debug("\t\t\tEntryDate:" + entryModel.getEntryDate());
 			 log.debug("\t\t\tEntryLink:" + entryModel.getEntryHref());

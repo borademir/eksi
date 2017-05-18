@@ -244,7 +244,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				for(int i=0;i<nickJsonArray.length();i++){
 					String nick = nickJsonArray.getString(i);
 					SuserModel sm = new SuserModel();
-					sm.setEntryAuthor(nick);
+					sm.setNick(nick);
 					serviceResponse.getSuserList().add(sm);
 				}
 			
@@ -536,8 +536,8 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				entryModel.setCommentCount(commentCount);
 				entryModel.setDataIsFavorite(dataIsFavorite);
 				SuserModel suser = new SuserModel();
-				suser.setEntryAuthor(entryAuthor);
-				suser.setEntryAuthorId(entryAuthorId);
+				suser.setNick(entryAuthor);
+				suser.setSuserId(entryAuthorId);
 				entryModel.setSuser(suser);
 				entryModel.setEntryId(entryId);
 				entryModel.setFavoriteCount(favoriteCount);

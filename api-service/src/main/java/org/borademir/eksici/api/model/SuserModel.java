@@ -4,27 +4,11 @@ package org.borademir.eksici.api.model;
  */
 public class SuserModel {
 	
-	private String entryAuthor;
+	private String nick;
 	
-	private String entryAuthorId;
+	private String suserId;
 	
 	private String href ;
-
-	public String getEntryAuthor() {
-		return entryAuthor;
-	}
-
-	public void setEntryAuthor(String entryAuthor) {
-		this.entryAuthor = entryAuthor;
-	}
-
-	public String getEntryAuthorId() {
-		return entryAuthorId;
-	}
-
-	public void setEntryAuthorId(String entryAuthorId) {
-		this.entryAuthorId = entryAuthorId;
-	}
 
 	public String getHref() {
 		return href;
@@ -32,6 +16,22 @@ public class SuserModel {
 
 	public void setHref(String href) {
 		this.href = href;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
+	}
+
+	public String getSuserId() {
+		return suserId;
+	}
+
+	public void setSuserId(String suserId) {
+		this.suserId = suserId;
 	}
 	
 	
