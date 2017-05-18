@@ -199,7 +199,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
-		System.out.println(doc.html());
+		
 		return null;
 	}
 	
@@ -663,10 +663,15 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			Element topicListElement = ulElements.get(0);
 			Elements liElements = topicListElement.getElementsByTag("li");
 			for(Element liEl : liElements){
-				if(liEl.id().contains("sponsored-index")){
+				if(liEl.id().contains("sponsored")){
 					continue;
 				}
-				Element topicElement = liEl.getElementsByTag("a").get(0);
+				
+				Elements linkList = liEl.getElementsByTag("a");
+				if(linkList == null || linkList.size() == 0){
+					continue; // sponsored link bugfix!
+				}
+				Element topicElement = linkList.get(0);
 				String href = topicElement.attr("href");
 				String topicText = ((TextNode)topicElement.childNode(0)).text();
 				String topicPopularEntryCount = "0";
@@ -733,7 +738,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			introEntryModel.setEntryDate(JSoupUtil.getElementTextBySelector(doc, "#quote-entry > footer"));
 		}
 		
-		System.out.println(doc.html());
+		
 		return retVal;
 	}
 
