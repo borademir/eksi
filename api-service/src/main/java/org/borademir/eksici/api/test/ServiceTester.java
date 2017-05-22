@@ -40,7 +40,9 @@ public class ServiceTester {
 		
 		boolean processAutocomplete = false;
 		
-		boolean processSuser = true;
+		boolean processSuser = false;
+		
+		boolean processEntryStats = true;
 		
 		
 		
@@ -64,7 +66,11 @@ public class ServiceTester {
 			String targetUrl = EksiciResourceUtil.getSuserUrl("qlluq");
 			eksiciService.suser(targetUrl);
 		}
-
+		
+		if(processEntryStats){
+			String targetUrl = EksiciResourceUtil.getUserEntryStatsUrl("son-entryleri", "qlluq", System.currentTimeMillis());
+			eksiciService.suserEntryStats(targetUrl);
+		}
 
 		if(processTodays){
 			log.debug("Todays Topics:");

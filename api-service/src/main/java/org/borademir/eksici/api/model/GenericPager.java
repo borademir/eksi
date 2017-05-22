@@ -13,6 +13,8 @@ public class GenericPager<T> extends PagingModel{
 
 	private List<T> contentList ;
 	
+	private String description ;
+	
 	public GenericPager(String href) {
 		super(href);
 	}
@@ -23,6 +25,14 @@ public class GenericPager<T> extends PagingModel{
 	
 	public void setContentList(List<T> contentList) {
 		this.contentList = contentList;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

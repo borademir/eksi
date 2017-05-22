@@ -12,12 +12,12 @@ import org.apache.log4j.Logger;
 public class EksiciResourceUtil {
 	
 	
-//	static {
-//		System.setProperty("http.proxyHost"  , "172.16.64.74");
-//		System.setProperty("http.proxyPort"  , "8080");
-//		System.setProperty("https.proxyHost" , "172.16.64.74");
-//		System.setProperty("https.proxyPort" , "8080");
-//	}
+	static {
+		System.setProperty("http.proxyHost"  , "172.16.64.74");
+		System.setProperty("http.proxyPort"  , "8080");
+		System.setProperty("https.proxyHost" , "172.16.64.74");
+		System.setProperty("https.proxyPort" , "8080");
+	}
 	
 	static final Properties PROPERTIES = load()  ;
 	
@@ -65,6 +65,10 @@ public class EksiciResourceUtil {
 	
 	public static String getDesertedTopicsUrl(long pTimeInMs){
 		return PROPERTIES.getProperty("url.desertedtopics") + pTimeInMs;
+	}
+	
+	public static String getUserEntryStatsUrl(String pEntryType , String pSuserNick , long pTimeInMs){
+		return String.format(PROPERTIES.getProperty("url.suser.entry.stats"), pEntryType, pSuserNick, String.valueOf(pTimeInMs));
 	}
 	
 	public static String getAutocompleteUrl(long pTimeInMs, String pKeyword){

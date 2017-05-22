@@ -502,74 +502,72 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			
 			
 			
-			Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
-			if(topicInfoElements != null && topicInfoElements.size() > 0){
-				Element topicLink = topicInfoElements.get(0);
-				returnTopic.setOriginalUrl(topicLink.attr("href"));
-				returnTopic.setTopicText(topicLink.text());
-			}
+			parseTopicUrl(returnTopic, doc);
 			
-			Element entryListUlElement = doc.getElementById("entry-list");
-			Elements liElements = entryListUlElement.getElementsByTag("li");
-			
-			if(returnTopic.getEntryList() == null){
-				returnTopic.setEntryList(new ArrayList<EntryModel>());
-			}
-			
-			for(Element liEl : liElements){
-				String entryId = liEl.attr("data-id");
-				String entryAuthor = liEl.attr("data-author");
-				String entryAuthorId = liEl.attr("data-author-id");
-				String dataIsFavorite = liEl.attr("data-isfavorite");
-				int favoriteCount = Integer.valueOf(liEl.attr("data-favorite-count"));
-				int commentCount = Integer.valueOf(liEl.attr("data-comment-count"));
-				
-				if(liEl.attr("data-seyler-slug").trim().length() > 0){
-					log.debug(liEl.attr("data-seyler-slug"));
-				}
-				
-				Element infoElement = liEl.getElementsByAttributeValue("class", "info").get(0);
-				Element entryDateElement = infoElement.getElementsByAttributeValue("class","entry-date permalink").get(0);
-				String entryDate = entryDateElement.text();
-				String entryHref = entryDateElement.attr("href");
-				
-				EntryModel entryModel = new EntryModel(entryHref);
-				entryModel.setCommentCount(commentCount);
-				entryModel.setDataIsFavorite(dataIsFavorite);
-				SuserModel suser = new SuserModel();
-				suser.setNick(entryAuthor);
-				suser.setSuserId(entryAuthorId);
-				entryModel.setSuser(suser);
-				entryModel.setEntryId(entryId);
-				entryModel.setFavoriteCount(favoriteCount);
-				
-				
-				
-				
-				entryModel.setEntryDate(entryDate);
-				
-//			try {
-//				entryModel.setEntryDate(EksiciDateUtil.formateEntryDate(entryDate));
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-				
-				Element authorElement = infoElement.getElementsByAttributeValue("class","entry-author").get(0);
-				
-				suser.setHref(authorElement.attr("href"));
-				
-				Element contentElement = liEl.getElementsByAttributeValue("class", "content").get(0);
-				
-				entryModel.setEntryText(contentElement.text());
-				entryModel.setEntryHtml(contentElement.html());
-				
-				returnTopic.getEntryList().add(entryModel);
-				
-			}
+			parseEntryList(returnTopic, doc);
 		}
 		
 		return returnTopic;
 	
+	}
+
+	private void parseTopicUrl(TopicModel returnTopic, Element doc) {
+		Elements topicInfoElements = doc.getElementsByAttributeValue("itemprop", "url");
+		if(topicInfoElements != null && topicInfoElements.size() > 0){
+			Element topicLink = topicInfoElements.get(0);
+			returnTopic.setOriginalUrl(topicLink.attr("href"));
+			returnTopic.setTopicText(topicLink.text());
+		}
+	}
+
+	private void parseEntryList(TopicModel returnTopic, Element pRootElement) {
+		Element entryListUlElement = pRootElement.getElementById("entry-list");
+		Elements liElements = entryListUlElement.getElementsByTag("li");
+		
+		if(returnTopic.getEntryList() == null){
+			returnTopic.setEntryList(new ArrayList<EntryModel>());
+		}
+		
+		for(Element liEl : liElements){
+			String entryId = liEl.attr("data-id");
+			String entryAuthor = liEl.attr("data-author");
+			String entryAuthorId = liEl.attr("data-author-id");
+			String dataIsFavorite = liEl.attr("data-isfavorite");
+			int favoriteCount = Integer.valueOf(liEl.attr("data-favorite-count"));
+			int commentCount = Integer.valueOf(liEl.attr("data-comment-count"));
+			
+			if(liEl.attr("data-seyler-slug").trim().length() > 0){
+				log.debug(liEl.attr("data-seyler-slug"));
+			}
+			
+			Element infoElement = liEl.getElementsByAttributeValue("class", "info").get(0);
+			Element entryDateElement = infoElement.getElementsByAttributeValue("class","entry-date permalink").get(0);
+			String entryDate = entryDateElement.text();
+			String entryHref = entryDateElement.attr("href");
+			
+			EntryModel entryModel = new EntryModel(entryHref);
+			entryModel.setCommentCount(commentCount);
+			entryModel.setDataIsFavorite(dataIsFavorite);
+			SuserModel suser = new SuserModel();
+			suser.setNick(entryAuthor);
+			suser.setSuserId(entryAuthorId);
+			entryModel.setSuser(suser);
+			entryModel.setEntryId(entryId);
+			entryModel.setFavoriteCount(favoriteCount);
+			entryModel.setEntryDate(entryDate);
+			
+			Element authorElement = infoElement.getElementsByAttributeValue("class","entry-author").get(0);
+			
+			suser.setHref(authorElement.attr("href"));
+			
+			Element contentElement = liEl.getElementsByAttributeValue("class", "content").get(0);
+			
+			entryModel.setEntryText(contentElement.text());
+			entryModel.setEntryHtml(contentElement.html());
+			
+			returnTopic.getEntryList().add(entryModel);
+			
+		}
 	}
 	
 	@Override
@@ -734,12 +732,58 @@ public class EksiServiceJsoupImpl implements IEksiService {
 			introEntryModel.setEntryText(introEntry.text());
 			retVal.setProfileIntroEntry(introEntryModel);
 			
-			introEntryModel.setEntryHtml(JSoupUtil.getElementInnerHtmlBySelector(doc, "#quote-entry > .content"));
+			introEntryModel.setEntryHtml(JSoupUtil.getElementInnerHtmlBySelector(doc, "#quote-entry > .content > p"));
 			introEntryModel.setEntryDate(JSoupUtil.getElementTextBySelector(doc, "#quote-entry > footer"));
 		}
 		
 		
 		return retVal;
+	}
+
+	@Override
+	public GenericPager<TopicModel> suserEntryStats(String targetUrl)throws EksiApiException, IOException {
+	
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		Response response = conn.execute();
+		
+		log.debug("Loaded : " + response.url());
+		Document doc = response.parse();
+		
+		System.out.println(doc.html());
+		GenericPager<TopicModel> retVal = new GenericPager<TopicModel>(response.url().toString());
+		retVal.setDescription(JSoupUtil.getElementTextById(doc	, "user-profile-stat-caption"));
+		if(retVal.getDescription() == null){
+			retVal.setDescription(JSoupUtil.getElementTextBySelector(doc, "body > h1"));
+		}
+		Elements topicElements = doc.getElementsByClass("topic-item");
+		if(topicElements != null && topicElements.size() > 0){
+			for(Element topicElement : topicElements){
+				Element topicLinkElement = JSoupUtil.getElementBySelector(topicElement, "#title > a");
+				if(topicLinkElement != null) {
+					TopicModel tm = new TopicModel(topicLinkElement.attr("href"));
+					tm.setTopicText(topicLinkElement.text());
+					parseEntryList(tm, topicElement);	
+					if(retVal.getContentList() == null) {
+						retVal.setContentList(new ArrayList<TopicModel>());
+					}
+					parseTopicUrl(tm, topicElement);
+					retVal.getContentList().add(tm);
+					
+				}
+			}
+		}
+		
+
+		return retVal;
+	
 	}
 
 }

@@ -38,5 +38,7 @@ public interface IEksiService extends IEksiBaseService{
 
 	SuserModel suser(String targetUrl) throws EksiApiException, IOException;
 
+	GenericPager<TopicModel> suserEntryStats(String targetUrl)  throws EksiApiException, IOException;
+
 
 }

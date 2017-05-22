@@ -262,6 +262,20 @@ public class EksiciRestApiController {
 	
 	}
 	
+	@GetMapping(VERSION_ONE + "/suser/{suserNick}/stats/entry/{statType}")
+	public ResponseEntity<GenericPager<TopicModel>> suserEntryStats(@PathVariable("suserNick") String pSuserNick,@PathVariable("statType") String pStatType) throws EksiApiException {
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("suser:" + pSuserNick);
+			String targetUrl = EksiciResourceUtil.getUserEntryStatsUrl(pStatType,pSuserNick,System.currentTimeMillis());
+			GenericPager<TopicModel> resp = eksiciService.suserEntryStats(targetUrl);
+			return new ResponseEntity<GenericPager<TopicModel>>(resp, HttpStatus.OK);
+		} catch (Exception e) {
+			throw new EksiApiException(e.getMessage());
+		} 
+	
+	}
+	
 	@GetMapping(VERSION_ONE + "/entry/{entryId}/favorites")
 	public ResponseEntity<List<SuserModel>> entryFavorities(@PathVariable("entryId") long pEntryId) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
