@@ -203,7 +203,6 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
-		System.out.println(doc.html());
 		
 		return null;
 	}
@@ -762,7 +761,6 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
 		
-		System.out.println(doc.html());
 		GenericPager<TopicModel> retVal = new GenericPager<TopicModel>(response.url().toString());
 		retVal.setDescription(JSoupUtil.getElementTextById(doc	, "user-profile-stat-caption"));
 		if(retVal.getDescription() == null){
@@ -813,7 +811,6 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Connection conn = loginForm.submit().cookies(cookiesResponse.cookies()).method(Method.POST);
 		Response resp = conn.execute();
 		Document afterLoginDoc = resp.parse();
-//		System.out.println(afterLoginDoc.html());
 		
 		Element validationElement = JSoupUtil.getElementBySelector(afterLoginDoc, ".field-validation-error");
 		if(validationElement != null){
