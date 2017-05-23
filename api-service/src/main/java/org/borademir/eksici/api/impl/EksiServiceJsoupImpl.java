@@ -14,6 +14,7 @@ import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.IEksiService;
 import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
+import org.borademir.eksici.api.model.EksiLoginSuser;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
@@ -791,7 +792,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 
 	@Override
-	public String login(String pUrl , String pEmail, String pPass) throws EksiApiException,	IOException {
+	public EksiLoginSuser login(String pUrl , String pEmail, String pPass) throws EksiApiException,	IOException {
 		
 		Connection cookiesConn = Jsoup.connect(pUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
@@ -828,7 +829,14 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				String cookieValue = resp.cookies().get(cookieName) ;
 				tokenBuffer.append(cookieName).append("=").append(cookieValue).append("; ");
 			}
-			return tokenBuffer.toString();
+			String token = tokenBuffer.toString();
+			EksiLoginSuser loginSuser = new EksiLoginSuser();
+			loginSuser.setSozlukToken(token);
+			SuserModel suserInfo = new SuserModel();
+			suserInfo.setNick(profileElement.attr("title"));
+			suserInfo.setHref(profileElement.attr("href"));
+			loginSuser.setSuserInfo(suserInfo);
+			return loginSuser;
 		}
 		
 		throw new EksiApiException("unknown problem");

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.EksiApiServiceFactory;
 import org.borademir.eksici.api.IEksiService;
+import org.borademir.eksici.api.model.EksiLoginSuser;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
@@ -79,11 +80,11 @@ public class ServiceTester {
 		
 		if(processFavorites){
 			String loginUrl = EksiciResourceUtil.getLoginUrl();
-			String cookie = eksiciService.login(loginUrl,"abc","pass");
-			System.out.println(cookie);
+			EksiLoginSuser loginSuser = eksiciService.login(loginUrl,"abc","pass");
+			System.out.println(loginSuser.getSozlukToken());
 			
 			String targetUrl = EksiciResourceUtil.getFavoritesUrl(System.currentTimeMillis(), 68148607);
-			eksiciService.favorites(targetUrl,cookie);
+			eksiciService.favorites(targetUrl,loginSuser.getSozlukToken());
 		}
 		
 		if(processTodays){

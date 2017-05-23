@@ -11,6 +11,7 @@ import org.borademir.eksici.api.EksiApiServiceFactory;
 import org.borademir.eksici.api.IEksiService;
 import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
+import org.borademir.eksici.api.model.EksiLoginSuser;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
 import org.borademir.eksici.api.model.SearchCriteriaModel;
@@ -212,6 +213,20 @@ public class EksiciRestApiController {
 			throw new EksiApiException(e.getMessage());
 		} 
 	}
+
+	@GetMapping(VERSION_ONE + "/login") 
+	public ResponseEntity<?> login(@RequestParam(value="email", required=true) String pEmail,@RequestParam(value="password", required=true) String pPassword) throws EksiApiException {
+
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("login:");
+			String targetUrl = EksiciResourceUtil.getLoginUrl();
+			EksiLoginSuser suser = eksiciService.login(targetUrl,pEmail, pPassword);
+			return new ResponseEntity<EksiLoginSuser>(suser, HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} 
+	}
 	
 	@GetMapping(VERSION_ONE + "/topics/entries") 
 	public ResponseEntity<TopicModel> topicsEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
@@ -282,7 +297,7 @@ public class EksiciRestApiController {
 		try {
 			log.debug("autocomplete:");
 			String targetUrl = EksiciResourceUtil.getFavoritesUrl(System.currentTimeMillis(), pEntryId);
-			List<SuserModel> resp = eksiciService.favorites(targetUrl);
+			List<SuserModel> resp = eksiciService.favorites(targetUrl,null);
 			return new ResponseEntity<List<SuserModel>>(resp, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
+import org.borademir.eksici.api.model.EksiLoginSuser;
 import org.borademir.eksici.api.model.GenericPager;
 import org.borademir.eksici.api.model.MainPageModel;
 import org.borademir.eksici.api.model.SuserModel;
@@ -40,7 +41,7 @@ public interface IEksiService extends IEksiBaseService{
 
 	GenericPager<TopicModel> suserEntryStats(String targetUrl)  throws EksiApiException, IOException;
 
-	String login(String pUrl , String pEmail, String pPass) throws EksiApiException, IOException;;
+	EksiLoginSuser login(String pUrl , String pEmail, String pPass) throws EksiApiException, IOException;;
 
 
 }
