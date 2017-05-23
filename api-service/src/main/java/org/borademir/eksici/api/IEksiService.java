@@ -34,11 +34,13 @@ public interface IEksiService extends IEksiBaseService{
 
 	Autocomplete autocomplete(String pUrl) throws IOException;
 
-	List<SuserModel> favorites(String targetUrl) throws EksiApiException, IOException;
+	List<SuserModel> favorites(String targetUrl, String pToken) throws EksiApiException, IOException;
 
 	SuserModel suser(String targetUrl) throws EksiApiException, IOException;
 
 	GenericPager<TopicModel> suserEntryStats(String targetUrl)  throws EksiApiException, IOException;
+
+	String login(String pUrl , String pEmail, String pPass) throws EksiApiException, IOException;;
 
 
 }

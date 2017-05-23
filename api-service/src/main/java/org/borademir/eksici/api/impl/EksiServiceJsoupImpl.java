@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -31,6 +32,7 @@ import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.FormElement;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
@@ -180,7 +182,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		return currentPage;
 	}
 	@Override
-	public List<SuserModel> favorites(String targetUrl)throws EksiApiException, IOException {
+	public List<SuserModel> favorites(String targetUrl,String pToken)throws EksiApiException, IOException {
 		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
@@ -189,7 +191,8 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("X-Requested-With","XMLHttpRequest")
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.header("authority", "eksisozluk.com")
-		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
+//		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
+		.header("cookie",pToken)
 		.method(Method.GET);
 		
 		
@@ -199,6 +202,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		
 		log.debug("Loaded : " + response.url());
 		Document doc = response.parse();
+		System.out.println(doc.html());
 		
 		return null;
 	}
@@ -784,6 +788,50 @@ public class EksiServiceJsoupImpl implements IEksiService {
 
 		return retVal;
 	
+	}
+
+	@Override
+	public String login(String pUrl , String pEmail, String pPass) throws EksiApiException,	IOException {
+		
+		Connection cookiesConn = Jsoup.connect(pUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.method(Method.GET);
+		
+		Response cookiesResponse = cookiesConn.execute();
+		Document cookiesDoc = cookiesResponse.parse();
+		
+		Element formElement = cookiesDoc.select("#login-form-container > form").first();
+		FormElement loginForm = (FormElement) formElement;
+		loginForm.getElementById("username").attr("value", pEmail);
+		loginForm.getElementById("password").attr("value", pPass);
+		
+		Connection conn = loginForm.submit().cookies(cookiesResponse.cookies()).method(Method.POST);
+		Response resp = conn.execute();
+		Document afterLoginDoc = resp.parse();
+//		System.out.println(afterLoginDoc.html());
+		
+		Element validationElement = JSoupUtil.getElementBySelector(afterLoginDoc, ".field-validation-error");
+		if(validationElement != null){
+			throw new EksiApiException(validationElement.text());
+		}
+		Element profileElement = JSoupUtil.getElementBySelector(afterLoginDoc, ".not-mobile > a");
+		if(profileElement != null && resp.cookies() != null){
+			System.out.println("merhaba " + profileElement.attr("title"));
+			Iterator<String> cookieKeysIt = resp.cookies().keySet().iterator();
+			StringBuffer tokenBuffer = new StringBuffer();
+			while (cookieKeysIt.hasNext()) {
+				String cookieName  = (String) cookieKeysIt.next();
+				String cookieValue = resp.cookies().get(cookieName) ;
+				tokenBuffer.append(cookieName).append("=").append(cookieValue).append("; ");
+			}
+			return tokenBuffer.toString();
+		}
+		
+		throw new EksiApiException("unknown problem");
 	}
 
 }

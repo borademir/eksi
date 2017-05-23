@@ -42,7 +42,11 @@ public class ServiceTester {
 		
 		boolean processSuser = false;
 		
-		boolean processEntryStats = true;
+		boolean processEntryStats = false;
+		
+		boolean processLogin  = false;
+		
+		boolean processFavorites =true;
 		
 		
 		
@@ -71,7 +75,17 @@ public class ServiceTester {
 			String targetUrl = EksiciResourceUtil.getUserEntryStatsUrl("son-entryleri", "qlluq", System.currentTimeMillis());
 			eksiciService.suserEntryStats(targetUrl);
 		}
-
+		
+		
+		if(processFavorites){
+			String loginUrl = EksiciResourceUtil.getLoginUrl();
+			String cookie = eksiciService.login(loginUrl,"abc","pass");
+			System.out.println(cookie);
+			
+			String targetUrl = EksiciResourceUtil.getFavoritesUrl(System.currentTimeMillis(), 68148607);
+			eksiciService.favorites(targetUrl,cookie);
+		}
+		
 		if(processTodays){
 			log.debug("Todays Topics:");
 			String targetUrl = EksiciResourceUtil.getPopularTopicsUrl();

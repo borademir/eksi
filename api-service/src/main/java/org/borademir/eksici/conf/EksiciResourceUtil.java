@@ -102,4 +102,8 @@ public class EksiciResourceUtil {
 	public static String getSuserUrl(String pSuserNick) {
 		return PROPERTIES.getProperty("url.suser") + pSuserNick;
 	}
+
+	public static String getLoginUrl() {
+		return PROPERTIES.getProperty("url.login");
+	}
 }
