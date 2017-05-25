@@ -47,9 +47,18 @@ public class ServiceTester {
 		
 		boolean processLogin  = false;
 		
-		boolean processFavorites =true;
+		boolean processFavorites =false;
 		
+		boolean processMessages = true;
 		
+		if(processMessages){
+			String loginUrl = EksiciResourceUtil.getLoginUrl();
+			EksiLoginSuser loginSuser = eksiciService.login(loginUrl,"bora@jforce.com.tr","solAcikbora1907");
+			System.out.println(loginSuser.getSozlukToken());
+			
+			String targetUrl = EksiciResourceUtil.getMessageUrl();
+			eksiciService.messages(targetUrl,loginSuser.getSozlukToken());
+		}
 		
 		if(processPopulars){
 			log.debug("Popular Topics:");

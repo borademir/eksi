@@ -41,7 +41,11 @@ public interface IEksiService extends IEksiBaseService{
 
 	GenericPager<TopicModel> suserEntryStats(String targetUrl)  throws EksiApiException, IOException;
 
-	EksiLoginSuser login(String pUrl , String pEmail, String pPass) throws EksiApiException, IOException;;
+	EksiLoginSuser login(String pUrl , String pEmail, String pPass) throws EksiApiException, IOException;
+
+	EksiLoginSuser loginWithToken(String targetUrl, String pToken) throws EksiApiException, IOException;
+
+	EksiLoginSuser messages(String targetUrl, String pToken) throws EksiApiException, IOException;;
 
 
 }

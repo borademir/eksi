@@ -6,14 +6,17 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.borademir.eksici.api.EksiApiException;
 import org.borademir.eksici.api.IEksiService;
 import org.borademir.eksici.api.model.Autocomplete;
 import org.borademir.eksici.api.model.ChannelModel;
+import org.borademir.eksici.api.model.Conversation;
 import org.borademir.eksici.api.model.EksiLoginSuser;
 import org.borademir.eksici.api.model.EntryModel;
 import org.borademir.eksici.api.model.GenericPager;
@@ -43,6 +46,8 @@ import org.jsoup.select.Elements;
 public class EksiServiceJsoupImpl implements IEksiService {
 	
 	static Logger log = Logger.getLogger(EksiServiceJsoupImpl.class);
+	
+	private HashMap<String, String> tokenCookieMap = new HashMap<String, String>();
 
 	@Override
 	public GenericPager<TopicModel> search(MainPageModel mainPage) throws EksiApiException, IOException {
@@ -812,6 +817,14 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		Response resp = conn.execute();
 		Document afterLoginDoc = resp.parse();
 		
+		EksiLoginSuser loginSuser = parseAfterLoginPage(resp, afterLoginDoc);
+		if(loginSuser == null){
+			throw new EksiApiException("unknown problem");
+		}
+		return loginSuser;
+	}
+
+	private EksiLoginSuser parseAfterLoginPage(Response resp,Document afterLoginDoc) throws EksiApiException {
 		Element validationElement = JSoupUtil.getElementBySelector(afterLoginDoc, ".field-validation-error");
 		if(validationElement != null){
 			throw new EksiApiException(validationElement.text());
@@ -826,17 +839,98 @@ public class EksiServiceJsoupImpl implements IEksiService {
 				String cookieValue = resp.cookies().get(cookieName) ;
 				tokenBuffer.append(cookieName).append("=").append(cookieValue).append("; ");
 			}
-			String token = tokenBuffer.toString();
 			EksiLoginSuser loginSuser = new EksiLoginSuser();
-			loginSuser.setSozlukToken(token);
+			loginSuser.setSozlukToken(getTokenWithCookie(tokenBuffer.toString()));
 			SuserModel suserInfo = new SuserModel();
 			suserInfo.setNick(profileElement.attr("title"));
 			suserInfo.setHref(profileElement.attr("href"));
 			loginSuser.setSuserInfo(suserInfo);
 			return loginSuser;
 		}
+		return null;
+	}
+
+	private String getTokenWithCookie(String pCookie) {
+		String token = generateToken();
+		tokenCookieMap.put(token, pCookie);
+		return token;
+	}
+
+	@Override
+	public EksiLoginSuser loginWithToken(String targetUrl, String pToken) throws EksiApiException, IOException {
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.header("authority", "eksisozluk.com")
+//		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
+		.header("cookie",tokenCookieMap.get(pToken))
+		.method(Method.GET);
 		
-		throw new EksiApiException("unknown problem");
+		Response resp = conn.execute();
+		
+		EksiLoginSuser loginSuser = parseAfterLoginPage(resp, resp.parse());
+		if(loginSuser == null){
+			throw new EksiApiException("unknown problem");
+		}
+		loginSuser.setSozlukToken(pToken);
+		return loginSuser;
+	}
+	
+	public String generateToken(){
+		UUID temp = UUID.randomUUID();
+		String uuidString = Long.toHexString(temp.getMostSignificantBits())
+		     + Long.toHexString(temp.getLeastSignificantBits());
+		return uuidString;
+	}
+
+	@Override
+	public EksiLoginSuser messages(String targetUrl, String pToken)	throws EksiApiException, IOException {
+
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
+		.header("Accept-Encoding", "gzip, deflate, sdch, br")
+		.header("Accept-Language", "en-US,en;q=0.8,tr;q=0.6")
+		.header("X-Requested-With","XMLHttpRequest")
+		.header("User-Agent",EksiciResourceUtil.getUserAgent())
+		.header("authority", "eksisozluk.com")
+//		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
+		.header("cookie",tokenCookieMap.get(pToken))
+		.method(Method.GET);
+		
+		Response resp = conn.execute();
+		Document doc = resp.parse();
+		EksiLoginSuser loginSuser = parseAfterLoginPage(resp, doc);
+		if(loginSuser == null){
+			throw new EksiApiException("unknown problem");
+		}
+		loginSuser.setSozlukToken(pToken);
+		loginSuser.setConversationList(new ArrayList<Conversation>());
+		Elements articleElements = doc.select("#threads > li > article");
+		if(articleElements != null ){
+			for(Element articleEl : articleElements){
+				Conversation conv = new Conversation();
+				Elements threadIdEls = articleEl.getElementsByAttributeValue("name", "threadId");
+				if(threadIdEls != null && threadIdEls.size() == 1){
+					conv.setThreadId(threadIdEls.get(0).attr("value"));
+				}
+				Element messageLinkEl = JSoupUtil.getElementBySelector(articleEl, "a");
+				if(messageLinkEl != null) {
+					conv.setTitle(JSoupUtil.getElementTextBySelector(messageLinkEl, "h2"));
+					conv.setSummary(JSoupUtil.getElementTextBySelector(messageLinkEl, "p"));
+					conv.setHref(messageLinkEl.attr("href"));
+					conv.setId(conv.getHref().replaceAll("/mesaj/", ""));
+				}
+				conv.setTime(JSoupUtil.getElementTextBySelector(articleEl, "footer > time"));
+				loginSuser.getConversationList().add(conv);
+			}
+		}
+		return loginSuser;
+	
 	}
 
 }

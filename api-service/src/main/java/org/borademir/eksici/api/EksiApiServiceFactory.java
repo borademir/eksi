@@ -6,8 +6,14 @@ import org.borademir.eksici.api.impl.EksiServiceJsoupImpl;
  */
 public class EksiApiServiceFactory {
 	
+	private static IEksiService eksiServiceImpl = null;
+	
+	
 	public static IEksiService createService(){
-		return new EksiServiceJsoupImpl();
+		if(eksiServiceImpl == null){
+			eksiServiceImpl = new EksiServiceJsoupImpl();
+		}
+		return eksiServiceImpl;
 	}
 
 }

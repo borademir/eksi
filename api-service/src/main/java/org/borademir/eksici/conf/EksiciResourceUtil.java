@@ -106,4 +106,8 @@ public class EksiciResourceUtil {
 	public static String getLoginUrl() {
 		return PROPERTIES.getProperty("url.login");
 	}
+
+	public static String getMessageUrl() {
+		return PROPERTIES.getProperty("url.message");
+	}
 }

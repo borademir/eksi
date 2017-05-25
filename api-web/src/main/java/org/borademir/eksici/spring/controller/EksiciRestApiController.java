@@ -1,6 +1,7 @@
 package org.borademir.eksici.spring.controller;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +52,7 @@ public class EksiciRestApiController {
 	@SuppressWarnings("unused")
 	@GetMapping(VERSION_ONE + "/topic/search")
 	public ResponseEntity<List<GenericPager<TopicModel>>> search( 
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
 			@RequestParam(value="keyword", required=false) String pKeyword,
 			@RequestParam(value="author", required=false) String pAuthor) throws EksiApiException {
 		
@@ -74,7 +77,10 @@ public class EksiciRestApiController {
 	
 	
 	@GetMapping(VERSION_ONE + "/topic/popular")
-	public ResponseEntity<GenericPager<TopicModel>> popularTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> popularTopics(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="nextPageHref", required=false) String pNextHref
+			) throws EksiApiException {
 		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -92,7 +98,9 @@ public class EksiciRestApiController {
 	
 	
 	@GetMapping(VERSION_ONE + "/topic/today")
-	public ResponseEntity<GenericPager<TopicModel>> todaysTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> todaysTopics(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
 		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -110,7 +118,9 @@ public class EksiciRestApiController {
 	}
 
 	@GetMapping(VERSION_ONE + "/topic/deserted")
-	public ResponseEntity<GenericPager<TopicModel>> desertedTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> desertedTopics(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
 		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -127,7 +137,9 @@ public class EksiciRestApiController {
 	}
 
 	@GetMapping(VERSION_ONE + "/topic/videos")
-	public ResponseEntity<GenericPager<TopicModel>> videoTopics(@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> videoTopics(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
 		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -145,7 +157,9 @@ public class EksiciRestApiController {
 	}
 
 	@GetMapping(VERSION_ONE + "/topic/todayinhistory/{year}")
-	public ResponseEntity<GenericPager<TopicModel>> todayInHistory(@PathVariable("year") int pYear,@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> todayInHistory(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@PathVariable("year") int pYear,@RequestParam(value="nextPageHref", required=false) String pNextHref) throws EksiApiException {
 		pNextHref = parseNextToken(pNextHref,"nextPageHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -180,7 +194,9 @@ public class EksiciRestApiController {
 
 	
 	@GetMapping(VERSION_ONE + "/channels/topics") 
-	public ResponseEntity<GenericPager<TopicModel>> channelTopics(@RequestParam(value="topicsHref", required=true) String pNextHref) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> channelTopics(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="topicsHref", required=true) String pNextHref) throws EksiApiException {
 
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -228,8 +244,38 @@ public class EksiciRestApiController {
 		} 
 	}
 	
+	@GetMapping(VERSION_ONE + "/login/{token}") 
+	public ResponseEntity<?> loginWithToken(@PathVariable("token") String pToken) throws EksiApiException {
+
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("login with token:");
+			String targetUrl = EksiciResourceUtil.getMessageUrl();
+			EksiLoginSuser suser = eksiciService.loginWithToken(targetUrl,pToken);
+			return new ResponseEntity<EksiLoginSuser>(suser, HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} 
+	}
+	
+	@GetMapping(VERSION_ONE + "/messages") 
+	public ResponseEntity<?> messages(@RequestHeader(value="Authorization",required=false) String pSozlukToken) throws EksiApiException {
+
+		IEksiService eksiciService = EksiApiServiceFactory.createService();
+		try {
+			log.debug("message:");
+			String targetUrl = EksiciResourceUtil.getMessageUrl();
+			EksiLoginSuser suser = eksiciService.messages(targetUrl,pSozlukToken);
+			return new ResponseEntity<EksiLoginSuser>(suser, HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} 
+	}
+	
 	@GetMapping(VERSION_ONE + "/topics/entries") 
-	public ResponseEntity<TopicModel> topicsEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
+	public ResponseEntity<TopicModel> topicsEntries(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
 		topicsHref = parseNextToken(topicsHref,"topicsHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -243,7 +289,9 @@ public class EksiciRestApiController {
 	}
 	
 	@GetMapping(VERSION_ONE + "/topic/entries") 
-	public ResponseEntity<TopicModel> topicEntries(@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
+	public ResponseEntity<TopicModel> topicEntries(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@RequestParam(value="topicsHref", required=true) String topicsHref) throws EksiApiException {
 		topicsHref = parseNextToken(topicsHref,"topicsHref");
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
@@ -258,13 +306,17 @@ public class EksiciRestApiController {
 	
 	
 	@GetMapping(VERSION_ONE + "/entry/{entryId}")
-	public ResponseEntity<TopicModel> entry(@PathVariable("entryId") long pEntryId) throws EksiApiException {
-		return topicEntries("/entry/" +pEntryId );
+	public ResponseEntity<TopicModel> entry(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@PathVariable("entryId") long pEntryId) throws EksiApiException {
+		return topicEntries(pSozlukToken,"/entry/" +pEntryId );
 	}
 	
 	
 	@GetMapping(VERSION_ONE + "/suser/{suserNick}")
-	public ResponseEntity<SuserModel> suser(@PathVariable("suserNick") String pSuserNick) throws EksiApiException {
+	public ResponseEntity<SuserModel> suser(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@PathVariable("suserNick") String pSuserNick) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("suser:" + pSuserNick);
@@ -278,7 +330,9 @@ public class EksiciRestApiController {
 	}
 	
 	@GetMapping(VERSION_ONE + "/suser/{suserNick}/stats/entry/{statType}")
-	public ResponseEntity<GenericPager<TopicModel>> suserEntryStats(@PathVariable("suserNick") String pSuserNick,@PathVariable("statType") String pStatType) throws EksiApiException {
+	public ResponseEntity<GenericPager<TopicModel>> suserEntryStats(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@PathVariable("suserNick") String pSuserNick,@PathVariable("statType") String pStatType) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("suser:" + pSuserNick);
@@ -292,12 +346,14 @@ public class EksiciRestApiController {
 	}
 	
 	@GetMapping(VERSION_ONE + "/entry/{entryId}/favorites")
-	public ResponseEntity<List<SuserModel>> entryFavorities(@PathVariable("entryId") long pEntryId) throws EksiApiException {
+	public ResponseEntity<List<SuserModel>> entryFavorities(
+			@RequestHeader(value="Authorization",required=false) String pSozlukToken,
+			@PathVariable("entryId") long pEntryId) throws EksiApiException {
 		IEksiService eksiciService = EksiApiServiceFactory.createService();
 		try {
 			log.debug("autocomplete:");
 			String targetUrl = EksiciResourceUtil.getFavoritesUrl(System.currentTimeMillis(), pEntryId);
-			List<SuserModel> resp = eksiciService.favorites(targetUrl,null);
+			List<SuserModel> resp = eksiciService.favorites(targetUrl,pSozlukToken);
 			return new ResponseEntity<List<SuserModel>>(resp, HttpStatus.OK);
 		} catch (Exception e) {
 			throw new EksiApiException(e.getMessage());
