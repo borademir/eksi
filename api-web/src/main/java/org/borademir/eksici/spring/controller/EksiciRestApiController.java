@@ -253,7 +253,7 @@ public class EksiciRestApiController {
 			String targetUrl = EksiciResourceUtil.getMessageUrl();
 			EksiLoginSuser suser = eksiciService.loginWithToken(targetUrl,pToken);
 			return new ResponseEntity<EksiLoginSuser>(suser, HttpStatus.OK);
-		} catch (Exception e) {
+		} catch (Exception e) {e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} 
 	}

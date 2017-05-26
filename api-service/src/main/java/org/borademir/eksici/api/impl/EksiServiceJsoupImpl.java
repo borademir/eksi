@@ -867,7 +867,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.header("authority", "eksisozluk.com")
 //		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
-		.header("cookie",tokenCookieMap.get(pToken))
+		.header("cookie",tokenCookieMap.get(pToken)==null ? "" : tokenCookieMap.get(pToken))
 		.method(Method.GET);
 		
 		Response resp = conn.execute();
@@ -899,7 +899,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		.header("User-Agent",EksiciResourceUtil.getUserAgent())
 		.header("authority", "eksisozluk.com")
 //		.header("cookie", "alertsnap=636278554610692200; iq=03f0309a86d74d2c9c4177a8abd5e386; ASP.NET_SessionId=hui4lczufv124v004zypdres; __gfp_64b=aAMay2Jj_HBM_DjFfg51MSOtN2rx6Yd1xomJLR7iU6P.Q7; __RequestVerificationToken=XhbFHfcrw_RolvJnWTyU_-0TGyWH8z5QSGGLDpX1CEt_lDDpO_JqZOh1Edrhl6pk0Ou9VW46_P4i3Jt_oEG8j6JJzCItSmE_jEvhTgn20LY1; alertsnap=636291628291451400; a=1RnPURblGlIKknRtqxtbuIXfZxWcb56Jiyq77Rggptkonb8p5S7JN3oPyxEWMFpRL1JVkkcxd42lKoEDLtknY0kIMmJtqKcKgfqETJLmQVvEQqahk4cc/xIn71PMgIFxAfc2DHj5mFm+aL1DEUB0jIe8TbwHk0TRImipxwHccc0=; sticky_id=c6b84c1b75469737575eb170ca4d1693; _ga=GA1.2.1520393962.1490592560; _gid=GA1.2.1586832044.1494848879; _gat=1; __asc=8c7b5fa815c0bbe3eb65dd52ab5; __auc=e4eae55815b0e3d7354ffad6837; lastnwcrtid_314=^{^}; lastnwcrtid_318=^{^}")
-		.header("cookie",tokenCookieMap.get(pToken))
+		.header("cookie",tokenCookieMap.get(pToken)==null ? "" : tokenCookieMap.get(pToken))
 		.method(Method.GET);
 		
 		Response resp = conn.execute();
