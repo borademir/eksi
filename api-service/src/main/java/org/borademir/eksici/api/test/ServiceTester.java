@@ -30,7 +30,7 @@ public class ServiceTester {
 		
 		MainPageModel mainPage = new MainPageModel();
 		
-		boolean processPopulars = false;
+		boolean processPopulars = true;
 		boolean processTodays = false;
 		boolean processDeserted = false;
 		boolean processTodayInHistory = false;
@@ -49,11 +49,11 @@ public class ServiceTester {
 		
 		boolean processFavorites =false;
 		
-		boolean processMessages = true;
+		boolean processMessages = false;
 		
 		if(processMessages){
 			String loginUrl = EksiciResourceUtil.getLoginUrl();
-			EksiLoginSuser loginSuser = eksiciService.login(loginUrl,"bora@jforce.com.tr","solAcikbora1907");
+			EksiLoginSuser loginSuser = eksiciService.login(loginUrl,"bora@jforce.com.tr","--");
 			System.out.println(loginSuser.getSozlukToken());
 			
 			String targetUrl = EksiciResourceUtil.getMessageUrl();
