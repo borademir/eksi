@@ -74,7 +74,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 		}
 		
 		
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -138,7 +138,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	public GenericPager<TopicModel> retrievePopularTopics(String pUrl) throws IOException {
 		
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -165,7 +165,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	public GenericPager<TopicModel> retrieveTodaysTopics(String pUrl) throws IOException {
 
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -189,7 +189,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 	@Override
 	public List<SuserModel> favorites(String targetUrl,String pToken)throws EksiApiException, IOException {
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -216,7 +216,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	public Autocomplete autocomplete(String pUrl) throws IOException {
 
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -268,7 +268,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	public GenericPager<TopicModel> retrieveDesertedTopics(String pUrl) throws IOException {
 
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -298,7 +298,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	public GenericPager<TopicModel> retrieveVideos(String pUrl) throws IOException {
 
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -325,7 +325,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	@Override
 	public GenericPager<TopicModel> retrieveTodayInHistoryTopics(String pUrl) throws IOException {
 
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -396,7 +396,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	public TopicModel retrieveEntries(String pUrl,boolean pUsePageHrefTemplate) throws IOException {
 		
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.data("p",String.valueOf(pUrl))
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
@@ -582,7 +582,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	@Override
 	public GenericPager<TopicModel> retrieveChannelTopics(String pUrl)throws IOException {
 		
-		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -613,7 +613,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	@Override
 	public List<ChannelModel> retrieveChannels()throws IOException {
 		
-		Connection conn = Jsoup.connect(EksiciResourceUtil.getHeaderReferrer()).ignoreContentType(true)
+		Connection conn = Jsoup.connect(EksiciResourceUtil.getHeaderReferrer()).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -704,7 +704,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	}
 	@Override
 	public SuserModel suser(String targetUrl) throws EksiApiException,IOException {
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -752,7 +752,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	@Override
 	public GenericPager<TopicModel> suserEntryStats(String targetUrl)throws EksiApiException, IOException {
 	
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -797,7 +797,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	@Override
 	public EksiLoginSuser login(String pUrl , String pEmail, String pPass) throws EksiApiException,	IOException {
 		
-		Connection cookiesConn = Jsoup.connect(pUrl).ignoreContentType(true)
+		Connection cookiesConn = Jsoup.connect(pUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -858,7 +858,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 
 	@Override
 	public EksiLoginSuser loginWithToken(String targetUrl, String pToken) throws EksiApiException, IOException {
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
@@ -890,7 +890,7 @@ public class EksiServiceJsoupImpl implements IEksiService {
 	@Override
 	public EksiLoginSuser messages(String targetUrl, String pToken)	throws EksiApiException, IOException {
 
-		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true)
+		Connection conn = Jsoup.connect(targetUrl).ignoreContentType(true).timeout(10000)
 		.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 		.header("Referer",EksiciResourceUtil.getHeaderReferrer())
 		.header("Accept-Encoding", "gzip, deflate, sdch, br")
